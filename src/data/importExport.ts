@@ -45,10 +45,13 @@ export async function importParsed(
 
       for (const [i, pc] of pd.cards.entries()) {
         if (pc.progress) {
-          const current = await db.cards.get(pc.progress.id);
+          const stored = await db.cards.get(pc.progress.id);
+          // Card apagado conta como ausente: importar o backup o traz de volta.
+          const current = stored?.deletedAt === undefined ? stored : undefined;
           if (current && current.updatedAt >= pc.progress.updatedAt) continue;
           // Card já existente fica no baralho em que está, mesmo que o nome tenha mudado.
-          const deckId = current ? current.deckId : await ensureDeck();
+          const deckId =
+            stored && existing.some((d) => d.id === stored.deckId) ? stored.deckId : await ensureDeck();
           await db.cards.put({
             id: pc.progress.id,
             deckId,

@@ -2,9 +2,9 @@ import { beforeEach, describe, expect, it } from 'vitest';
 import { parseCardJson, type ParsedDeck } from '../domain/cardJson';
 import { createScheduler } from '../domain/scheduler';
 import { resetDb } from '../test/resetDb';
-import { createCard, getCard, listDeckCards } from './cards';
+import { createCard, deleteCard, getCard, listDeckCards } from './cards';
 import { db } from './db';
-import { createDeck, listDecks, updateDeck } from './decks';
+import { createDeck, deleteDeck, listDecks, updateDeck } from './decks';
 import { exportBackupJson, exportDeckJson, importParsed, markExported } from './importExport';
 import { answerCard } from './reviews';
 import { getSettings } from './settings';
@@ -86,6 +86,36 @@ describe('importParsed', () => {
     expect(got?.front).toBe('novo');
     expect(got?.deckId).toBe(d.id);
     expect(got?.updatedAt).toBe(9999);
+  });
+
+  it('backup recupera baralho e cards apagados depois dele', async () => {
+    const d = await createDeck('Inglês', undefined, 1);
+    const c1 = await createCard(d.id, 'a', 'b', 1);
+    const c2 = await createCard(d.id, 'c', 'd', 2);
+    const backup = await exportBackupJson();
+    await deleteDeck(d.id, 5000);
+    const r = await importParsed(parsed(backup), {}, 6000);
+    expect(r.imported).toBe(2);
+    const decks = await listDecks();
+    expect(decks.map((x) => x.name)).toEqual(['Inglês']);
+    expect(r.deckIds).toEqual([decks[0].id]);
+    const cards = await listDeckCards(decks[0].id);
+    expect(cards.map((c) => c.id).sort()).toEqual([c1.id, c2.id].sort());
+    expect(cards.every((c) => c.deletedAt === undefined)).toBe(true);
+  });
+
+  it('backup recupera card apagado no baralho em que ele estava', async () => {
+    const d = await createDeck('Inglês', undefined, 1);
+    const c = await createCard(d.id, 'a', 'b', 1);
+    const backup = await exportBackupJson();
+    await updateDeck(d.id, { name: 'English' }, 5);
+    await deleteCard(c.id, 5000);
+    const r = await importParsed(parsed(backup), {}, 6000);
+    expect(r.imported).toBe(1);
+    expect(await db.decks.count()).toBe(1);
+    const got = await getCard(c.id);
+    expect(got?.deletedAt).toBeUndefined();
+    expect(got?.deckId).toBe(d.id);
   });
 
   it('destino inexistente falha sem salvar nada', async () => {
