@@ -12,7 +12,7 @@ import { BottomSheet } from '../components/BottomSheet';
 import { DeckSheet } from '../components/DeckSheet';
 import { Icon } from '../components/Icon';
 import { TabBar } from '../components/TabBar';
-import { UNDO_MS, useToast } from '../components/Toast';
+import { DELETE_ERROR, UNDO_ERROR, UNDO_MS, useSafeAction, useToast } from '../components/Toast';
 import { copyText, shareJson, slugify } from '../share';
 
 const DAY = 86_400_000;
@@ -28,6 +28,7 @@ export default function DeckScreen() {
   const { id = '' } = useParams();
   const navigate = useNavigate();
   const toast = useToast();
+  const run = useSafeAction();
   const deck = useLiveQuery(() => getDeck(id), [id]);
   const cards = useLiveQuery(() => listDeckCards(id), [id]);
   const settings = useLiveQuery(() => getSettings(), []);
@@ -69,12 +70,14 @@ export default function DeckScreen() {
     await shareJson(`${slugify(deck.name)}${suffix}.json`, json);
   }
 
+  const exportDeck = (mode: 'cards' | 'progress' | 'copy') => run(() => exportAs(mode), 'Não foi possível exportar.');
+
   async function removeDeck() {
     if (!deck) return;
     const deckId = deck.id;
     await deleteDeck(deckId);
     setMenuOpen(false);
-    toast({ message: 'Baralho apagado', action: { label: 'Desfazer', onAction: () => void restoreDeck(deckId) } }, UNDO_MS);
+    toast({ message: 'Baralho apagado', action: { label: 'Desfazer', onAction: () => run(() => restoreDeck(deckId), UNDO_ERROR) } }, UNDO_MS);
     navigate('/decks');
   }
 
@@ -135,9 +138,9 @@ export default function DeckScreen() {
 
       <BottomSheet open={exportOpen} onClose={() => setExportOpen(false)} title="Exportar baralho">
         <div className="stack">
-          <button type="button" className="btn btn--secondary btn--block" onClick={() => void exportAs('cards')}>Compartilhar só os cards</button>
-          <button type="button" className="btn btn--secondary btn--block" onClick={() => void exportAs('progress')}>Compartilhar com progresso</button>
-          <button type="button" className="btn btn--secondary btn--block" onClick={() => void exportAs('copy')}>
+          <button type="button" className="btn btn--secondary btn--block" onClick={() => exportDeck('cards')}>Compartilhar só os cards</button>
+          <button type="button" className="btn btn--secondary btn--block" onClick={() => exportDeck('progress')}>Compartilhar com progresso</button>
+          <button type="button" className="btn btn--secondary btn--block" onClick={() => exportDeck('copy')}>
             <Icon name="copy" size={18} /> Copiar JSON
           </button>
         </div>
@@ -148,7 +151,7 @@ export default function DeckScreen() {
           <button type="button" className="btn btn--secondary btn--block" onClick={() => { setMenuOpen(false); setRenameOpen(true); }}>
             Renomear baralho
           </button>
-          <button type="button" className="btn btn--danger btn--block" onClick={() => void removeDeck()}>Apagar baralho</button>
+          <button type="button" className="btn btn--danger btn--block" onClick={() => run(removeDeck, DELETE_ERROR)}>Apagar baralho</button>
         </div>
       </BottomSheet>
 

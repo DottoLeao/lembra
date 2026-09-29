@@ -12,6 +12,7 @@ import type { Rating, Settings } from '../../domain/types';
 import { AnswerButtons } from '../components/AnswerButtons';
 import { FlipCard } from '../components/FlipCard';
 import { Icon } from '../components/Icon';
+import { UNDO_ERROR, useSafeAction } from '../components/Toast';
 
 interface UndoEntry {
   logId: string;
@@ -31,6 +32,7 @@ export default function Study() {
   const [undoStack, setUndoStack] = useState<UndoEntry[]>([]);
   const [now, setNow] = useState(() => Date.now());
   const busy = useRef(false);
+  const run = useSafeAction();
 
   useEffect(() => {
     let alive = true;
@@ -129,7 +131,7 @@ export default function Study() {
   return (
     <main className="screen screen--focus">
       <div className="study__top">
-        <button type="button" className="icon-btn" aria-label="Encerrar sessão" onClick={() => void finish(session)}>
+        <button type="button" className="icon-btn" aria-label="Encerrar sessão" onClick={() => run(() => finish(session))}>
           <Icon name="close" />
         </button>
         <div className="progress">
@@ -142,7 +144,7 @@ export default function Study() {
           </div>
         </div>
         <button type="button" className="icon-btn" aria-label="Desfazer última resposta" disabled={undoStack.length === 0}
-          onClick={() => void undo()}>
+          onClick={() => run(undo, UNDO_ERROR)}>
           <Icon name="undo" />
         </button>
       </div>
@@ -153,13 +155,13 @@ export default function Study() {
         back={card.back}
         flipped={flipped}
         onFlip={() => setFlipped(true)}
-        onSwipe={(dir) => void answer(dir === 'right' ? 3 : 1)}
+        onSwipe={(dir) => run(() => answer(dir === 'right' ? 3 : 1))}
       />
 
       <div className="study__bottom">
         {flipped ? (
           <>
-            <AnswerButtons intervals={intervals} onAnswer={(r) => void answer(r)} />
+            <AnswerButtons intervals={intervals} onAnswer={(r) => run(() => answer(r))} />
             <p className="hint-line">ou arraste o card: ← Errei · Bom →</p>
           </>
         ) : (

@@ -2,6 +2,7 @@ import { useEffect, useState, type FormEvent } from 'react';
 import { createDeck, DECK_COLORS, updateDeck } from '../../data/decks';
 import type { Deck } from '../../domain/types';
 import { BottomSheet } from './BottomSheet';
+import { useSafeAction } from './Toast';
 
 export function DeckSheet({ open, onClose, deck, onSaved }: {
   open: boolean;
@@ -11,6 +12,7 @@ export function DeckSheet({ open, onClose, deck, onSaved }: {
 }) {
   const [name, setName] = useState('');
   const [color, setColor] = useState(DECK_COLORS[0]);
+  const run = useSafeAction();
 
   useEffect(() => {
     if (open) {
@@ -29,7 +31,7 @@ export function DeckSheet({ open, onClose, deck, onSaved }: {
 
   return (
     <BottomSheet open={open} onClose={onClose} title={deck ? 'Editar baralho' : 'Novo baralho'}>
-      <form className="stack" onSubmit={(e) => void submit(e)}>
+      <form className="stack" onSubmit={(e) => run(() => submit(e))}>
         <label className="field">
           Nome do baralho
           <input className="input" value={name} onChange={(e) => setName(e.target.value)} autoFocus maxLength={80}

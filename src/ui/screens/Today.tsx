@@ -8,7 +8,7 @@ import { DeckRow } from '../components/DeckRow';
 import { DeckSheet } from '../components/DeckSheet';
 import { Icon } from '../components/Icon';
 import { TabBar } from '../components/TabBar';
-import { useToast } from '../components/Toast';
+import { BACKUP_ERROR, useSafeAction, useToast } from '../components/Toast';
 import { shareJson } from '../share';
 import { readSession, writeSession } from '../storage';
 
@@ -28,6 +28,7 @@ export default function Today() {
   const [params, setParams] = useSearchParams();
   const navigate = useNavigate();
   const toast = useToast();
+  const run = useSafeAction();
   const [sheet, setSheet] = useState(params.get('newDeck') === '1');
   const [backupDismissed, setBackupDismissed] = useState(() => readSession('backupDismissed') === '1');
 
@@ -75,7 +76,7 @@ export default function Today() {
       {overview.backupDue && !backupDismissed && (
         <div className="notice">
           <p>Faz tempo que tu não exportas um backup.</p>
-          <button type="button" className="link-btn" onClick={() => void backupNow()}>Exportar</button>
+          <button type="button" className="link-btn" onClick={() => run(backupNow, BACKUP_ERROR)}>Exportar</button>
           <button type="button" className="icon-btn" aria-label="Dispensar aviso" onClick={dismissBackup}>
             <Icon name="close" size={18} />
           </button>

@@ -5,6 +5,7 @@ import { updateSettings } from '../../data/settings';
 import { AnswerButtons } from '../components/AnswerButtons';
 import { FlipCard } from '../components/FlipCard';
 import { Icon } from '../components/Icon';
+import { useSafeAction } from '../components/Toast';
 
 const MINUTE_OPTIONS = [5, 10, 15];
 
@@ -30,6 +31,7 @@ export default function Welcome() {
   const [step, setStep] = useState(0);
   const [flipped, setFlipped] = useState(false);
   const [minutes, setMinutes] = useState(10);
+  const run = useSafeAction();
 
   async function finish(createDeck: boolean) {
     await updateSettings({ onboardedAt: Date.now(), ...(createDeck ? { minutesPerDay: minutes } : {}) });
@@ -105,7 +107,7 @@ export default function Welcome() {
             <span key={i} className={i === step ? 'welcome__dot welcome__dot--active' : 'welcome__dot'} />
           ))}
         </div>
-        {!last && <button type="button" className="link-btn" onClick={() => void finish(false)}>Pular</button>}
+        {!last && <button type="button" className="link-btn" onClick={() => run(() => finish(false))}>Pular</button>}
       </div>
 
       <AnimatePresence mode="wait">
@@ -118,7 +120,7 @@ export default function Welcome() {
       </AnimatePresence>
 
       {last ? (
-        <button type="button" className="btn btn--primary btn--block" onClick={() => void finish(!again)}>
+        <button type="button" className="btn btn--primary btn--block" onClick={() => run(() => finish(!again))}>
           {again ? 'Voltar aos ajustes' : 'Criar meu primeiro baralho'}
         </button>
       ) : (

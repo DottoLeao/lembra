@@ -5,7 +5,7 @@ import { createCard, deleteCard, getCard, restoreCard, updateCard } from '../../
 import { listDecks } from '../../data/decks';
 import { DeckSheet } from '../components/DeckSheet';
 import { Icon } from '../components/Icon';
-import { UNDO_MS, useToast } from '../components/Toast';
+import { DELETE_ERROR, UNDO_ERROR, UNDO_MS, useSafeAction, useToast } from '../components/Toast';
 import { readLocal, requestPersistentStorage, writeLocal } from '../storage';
 
 export default function CardEditor() {
@@ -13,6 +13,7 @@ export default function CardEditor() {
   const [params] = useSearchParams();
   const navigate = useNavigate();
   const toast = useToast();
+  const run = useSafeAction();
   const decks = useLiveQuery(() => listDecks(), []);
   const existing = useLiveQuery(() => (id ? getCard(id) : Promise.resolve(null)), [id]);
 
@@ -72,7 +73,7 @@ export default function CardEditor() {
   async function remove() {
     if (!id) return;
     await deleteCard(id);
-    toast({ message: 'Card apagado', action: { label: 'Desfazer', onAction: () => void restoreCard(id) } }, UNDO_MS);
+    toast({ message: 'Card apagado', action: { label: 'Desfazer', onAction: () => run(() => restoreCard(id), UNDO_ERROR) } }, UNDO_MS);
     navigate(-1);
   }
 
@@ -138,17 +139,17 @@ export default function CardEditor() {
 
       {editing ? (
         <div className="actions2">
-          <button type="button" className="btn btn--danger" onClick={() => void remove()}>
+          <button type="button" className="btn btn--danger" onClick={() => run(remove, DELETE_ERROR)}>
             <Icon name="trash" size={18} /> Apagar card
           </button>
-          <button type="button" className="btn btn--primary" disabled={!canSave} onClick={() => void saveEdit()}>
+          <button type="button" className="btn btn--primary" disabled={!canSave} onClick={() => run(saveEdit)}>
             Salvar
           </button>
         </div>
       ) : (
         <div className="actions2">
           <Link to={deckId ? `/deck/${deckId}` : '/decks'} className="btn btn--secondary">Concluir</Link>
-          <button type="button" className="btn btn--primary" disabled={!canSave} onClick={() => void saveNew()}>
+          <button type="button" className="btn btn--primary" disabled={!canSave} onClick={() => run(saveNew)}>
             Salvar e próximo
           </button>
         </div>
