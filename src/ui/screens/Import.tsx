@@ -9,6 +9,7 @@ import type { Card } from '../../domain/types';
 import { Icon } from '../components/Icon';
 import { useToast } from '../components/Toast';
 import { copyText } from '../share';
+import { requestPersistentStorage } from '../storage';
 
 const WARNING_TEXT: Record<ImportWarning, string> = {
   long: 'Resposta longa demais para um card',
@@ -97,6 +98,7 @@ export default function Import() {
         if (target !== NEW) opts = { targetDeckId: target };
       }
       const r = await importParsed(toImport, opts);
+      void requestPersistentStorage();
       toast({ message: `${r.imported} ${r.imported === 1 ? 'card importado' : 'cards importados'}` });
       navigate(r.deckIds.length === 1 ? `/deck/${r.deckIds[0]}` : '/', { replace: true });
     } catch {

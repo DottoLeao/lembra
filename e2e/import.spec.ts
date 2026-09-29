@@ -95,3 +95,22 @@ test('novo baralho sem nome desabilita a importação', async ({ page }) => {
   await page.getByLabel('Nome do novo baralho').fill('');
   await expect(page.getByRole('button', { name: /^Importar/ })).toBeDisabled();
 });
+
+test('importar pede armazenamento persistente', async ({ page }) => {
+  await page.addInitScript(() => {
+    const w = window as unknown as { __persistCalls: number };
+    w.__persistCalls = 0;
+    Object.defineProperty(StorageManager.prototype, 'persist', {
+      configurable: true,
+      value: async () => {
+        w.__persistCalls++;
+        return true;
+      },
+    });
+  });
+  await page.goto('/#/import');
+  await page.getByLabel('JSON dos cards').fill(PAIR);
+  await page.getByRole('button', { name: 'Importar 2 cards' }).click();
+  await expect(page.getByRole('heading', { name: 'Inglês' })).toBeVisible();
+  expect(await page.evaluate(() => (window as unknown as { __persistCalls: number }).__persistCalls)).toBe(1);
+});
