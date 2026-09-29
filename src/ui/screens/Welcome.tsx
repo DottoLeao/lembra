@@ -46,7 +46,7 @@ export default function Welcome() {
       body: (
         <p className="welcome__text">
           A gente esquece rápido. Cada revisão na hora certa deixa o esquecimento mais lento. O Lembra revisa cada coisa
-          pouco antes de você esquecer.
+          pouco antes de tu esqueceres.
         </p>
       ),
     },

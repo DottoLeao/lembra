@@ -3,6 +3,7 @@ import { expect, test } from '@playwright/test';
 test('primeira abertura mostra o onboarding e termina criando o primeiro baralho', async ({ page }) => {
   await page.goto('/');
   await expect(page.getByRole('heading', { name: 'Estude menos, lembre mais.' })).toBeVisible();
+  await expect(page.getByText(/O Lembra revisa cada coisa\s+pouco antes de tu esqueceres\./)).toBeVisible();
   await page.getByRole('button', { name: 'Continuar' }).click();
 
   await expect(page.getByRole('heading', { name: 'Tente lembrar antes de virar.' })).toBeVisible();
