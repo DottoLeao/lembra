@@ -32,7 +32,7 @@ export default function Today() {
   const [backupDismissed, setBackupDismissed] = useState(() => readSession('backupDismissed') === '1');
 
   useEffect(() => {
-    if ((false as boolean) && overview && !overview.onboarded) navigate('/welcome', { replace: true });
+    if (overview && !overview.onboarded) navigate('/welcome', { replace: true });
   }, [overview, navigate]);
 
   function closeSheet() {

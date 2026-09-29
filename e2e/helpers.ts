@@ -3,7 +3,9 @@ import { expect, type Page } from '@playwright/test';
 export async function openApp(page: Page): Promise<void> {
   await page.goto('/');
   const skip = page.getByRole('button', { name: 'Pular' });
-  if (await skip.isVisible().catch(() => false)) await skip.click();
+  // o redirecionamento acontece depois da primeira renderização: espera o botão em vez de checar na hora
+  if (await skip.waitFor({ timeout: 3000 }).then(() => true, () => false)) await skip.click();
+  await expect(skip).toHaveCount(0);
 }
 
 export async function createDeck(page: Page, name: string): Promise<void> {
