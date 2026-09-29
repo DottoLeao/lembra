@@ -7,6 +7,8 @@ export interface SessionState {
   answered: number;
   again: number;
   startedAt: number;
+  /** card restaurado pelo desfazer: é mostrado antes de qualquer outro até ser respondido */
+  undoneId?: string;
 }
 
 export function startSession(cards: Card[], now: number): SessionState {
@@ -16,6 +18,7 @@ export function startSession(cards: Card[], now: number): SessionState {
 const byDue = (x: Card, y: Card) => x.fsrs.due - y.fsrs.due;
 
 export function currentCard(s: SessionState, now: number): Card | undefined {
+  if (s.undoneId && s.pending[0]?.id === s.undoneId) return s.pending[0];
   const dueLearning = s.learning.filter((c) => c.fsrs.due <= now).sort(byDue)[0];
   if (dueLearning) return dueLearning;
   if (s.pending.length > 0) return s.pending[0];
@@ -32,13 +35,14 @@ export function applyAnswer(s: SessionState, updated: Card, rating: Rating, endO
   const pending = s.pending.filter((c) => c.id !== updated.id);
   const learning = s.learning.filter((c) => c.id !== updated.id);
   if (isLearning(updated.fsrs) && updated.fsrs.due < endOfDay) learning.push(updated);
-  return { ...s, pending, learning, answered: s.answered + 1, again: s.again + (rating === 1 ? 1 : 0) };
+  return { ...s, pending, learning, undoneId: undefined, answered: s.answered + 1, again: s.again + (rating === 1 ? 1 : 0) };
 }
 
 export function applyUndo(s: SessionState, restored: Card, rating: Rating): SessionState {
   return {
     ...s,
     pending: [restored, ...s.pending.filter((c) => c.id !== restored.id)],
+    undoneId: restored.id,
     learning: s.learning.filter((c) => c.id !== restored.id),
     answered: Math.max(0, s.answered - 1),
     again: Math.max(0, s.again - (rating === 1 ? 1 : 0)),

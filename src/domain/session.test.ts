@@ -62,4 +62,17 @@ describe('session', () => {
     expect(s.again).toBe(0);
     expect(remaining(s)).toBe(2);
   });
+
+  it('desfazer mostra o card restaurado mesmo com outro de aprendizagem vencido', () => {
+    let s = startSession([a, b], now);
+    s = applyAnswer(s, learning(a, now + 10 * MIN), 1, END);
+    s = applyAnswer(s, learning(b, now + 10 * MIN), 1, END);
+    const later = now + 11 * MIN;
+    const aDue = s.learning.find((c) => c.id === 'a')!;
+    s = applyAnswer(s, learning(a, later + 10 * MIN), 1, END);
+    s = applyUndo(s, aDue, 1);
+    expect(currentCard(s, later)?.id).toBe('a');
+    s = applyAnswer(s, graduated(a), 3, END);
+    expect(currentCard(s, later)?.id).toBe('b');
+  });
 });
