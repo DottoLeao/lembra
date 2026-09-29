@@ -27,3 +27,10 @@ test('Baralhos lista e cria baralhos', async ({ page }) => {
   await createDeck(page, 'Física');
   await expect(page.locator('.deck-row')).toHaveCount(2);
 });
+
+test('um card novo aparece no singular', async ({ page }) => {
+  await createDeck(page, 'Capitais');
+  await createCards(page, 'Capitais', [['Capital da Austrália?', 'Canberra']]);
+  await openApp(page);
+  await expect(page.getByText('0 revisões · 1 novo · cerca de 1 min', { exact: true })).toBeVisible();
+});

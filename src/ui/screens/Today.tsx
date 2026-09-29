@@ -93,7 +93,7 @@ export default function Today() {
                 <span className="hero__unit">{total === 1 ? 'card' : 'cards'}</span>
               </div>
               <p className="hero__meta">
-                {queue.reviewCount} revisões · {queue.newCount} novos · cerca de {queue.estimatedMinutes} min
+                {queue.reviewCount} {queue.reviewCount === 1 ? 'revisão' : 'revisões'} · {queue.newCount} {queue.newCount === 1 ? 'novo' : 'novos'} · cerca de {queue.estimatedMinutes} min
               </p>
               <Link to="/study" className="btn btn--primary btn--block">
                 Estudar agora <Icon name="arrow-right" size={18} />

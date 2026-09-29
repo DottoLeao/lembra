@@ -50,3 +50,11 @@ test('apagar baralho tem desfazer', async ({ page }) => {
   await page.getByRole('button', { name: 'Desfazer' }).click();
   await expect(page.locator('.deck-row')).toHaveCount(1);
 });
+
+test('um card novo aparece no singular', async ({ page }) => {
+  await createDeck(page, 'Química');
+  await createCards(page, 'Química', [['H2O', 'Água']]);
+  await page.goto('/#/decks');
+  await page.getByRole('link', { name: /Química/ }).click();
+  await expect(page.getByText('1 card · 0 para hoje · 1 novo', { exact: true })).toBeVisible();
+});

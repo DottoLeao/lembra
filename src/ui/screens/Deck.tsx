@@ -93,7 +93,7 @@ export default function DeckScreen() {
       <div className="stack" style={{ gap: 4 }}>
         <h1 className="title-serif page-title">{deck.name}</h1>
         <p className="muted" style={{ margin: 0, fontSize: 14 }}>
-          {cards.length} {cards.length === 1 ? 'card' : 'cards'} · {dueCount} para hoje · {newCount} novos
+          {cards.length} {cards.length === 1 ? 'card' : 'cards'} · {dueCount} para hoje · {newCount} {newCount === 1 ? 'novo' : 'novos'}
         </p>
       </div>
 
