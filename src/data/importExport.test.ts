@@ -4,7 +4,7 @@ import { createScheduler } from '../domain/scheduler';
 import { resetDb } from '../test/resetDb';
 import { createCard, getCard, listDeckCards } from './cards';
 import { db } from './db';
-import { createDeck, listDecks } from './decks';
+import { createDeck, listDecks, updateDeck } from './decks';
 import { exportBackupJson, exportDeckJson, importParsed, markExported } from './importExport';
 import { answerCard } from './reviews';
 import { getSettings } from './settings';
@@ -56,6 +56,44 @@ describe('importParsed', () => {
     expect((await getCard(c.id))?.fsrs.reps).toBe(1);
     const again = await importParsed(parsed(backup), {}, 2000);
     expect(again.imported).toBe(0);
+  });
+
+  it('reimportar backup após renomear o baralho não cria baralho nem move cards', async () => {
+    const d = await createDeck('Inglês', undefined, 1);
+    const c = await createCard(d.id, 'a', 'b', 1);
+    const backup = await exportBackupJson();
+    await updateDeck(d.id, { name: 'English' }, 5);
+    const r = await importParsed(parsed(backup), {}, 1000);
+    expect(r.imported).toBe(0);
+    expect(r.deckIds).toEqual([]);
+    const decks = await listDecks();
+    expect(decks.map((x) => x.name)).toEqual(['English']);
+    expect((await getCard(c.id))?.deckId).toBe(d.id);
+  });
+
+  it('arquivo mais novo vence sem mudar o baralho do card', async () => {
+    const d = await createDeck('Inglês', undefined, 1);
+    const c = await createCard(d.id, 'a', 'b', 1);
+    const backup = JSON.parse(await exportBackupJson());
+    const entry = backup.decks[0].cards[0];
+    entry.front = 'novo';
+    entry.updatedAt = 9999;
+    await updateDeck(d.id, { name: 'English' }, 5);
+    const r = await importParsed(parsed(JSON.stringify(backup)), {}, 20000);
+    expect(r.imported).toBe(1);
+    expect(await db.decks.count()).toBe(1);
+    const got = await getCard(c.id);
+    expect(got?.front).toBe('novo');
+    expect(got?.deckId).toBe(d.id);
+    expect(got?.updatedAt).toBe(9999);
+  });
+
+  it('destino inexistente falha sem salvar nada', async () => {
+    await expect(
+      importParsed(parsed('[{"front":"a","back":"b"}]'), { targetDeckId: 'nao-existe' }),
+    ).rejects.toThrow('Baralho de destino não encontrado.');
+    expect(await db.decks.count()).toBe(0);
+    expect(await db.cards.count()).toBe(0);
   });
 
   it('é atômico: se um card falha, nada é salvo', async () => {

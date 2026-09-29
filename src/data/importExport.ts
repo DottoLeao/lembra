@@ -14,36 +14,41 @@ export async function importParsed(
 ): Promise<{ imported: number; deckIds: string[] }> {
   return db.transaction('rw', [db.decks, db.cards], async () => {
     const existing = (await db.decks.toArray()).filter((d) => d.deletedAt === undefined);
+    const single = opts.targetDeckId && decks.length === 1 ? opts.targetDeckId : undefined;
+    if (single && !existing.some((d) => d.id === single)) {
+      throw new Error('Baralho de destino não encontrado.');
+    }
     let imported = 0;
-    const deckIds: string[] = [];
+    const deckIds = new Set<string>();
+    if (single) deckIds.add(single);
 
     for (const [di, pd] of decks.entries()) {
-      let deckId: string;
-      if (opts.targetDeckId && decks.length === 1) {
-        deckId = opts.targetDeckId;
-      } else {
-        const match = pd.name ? existing.find((d) => d.name === pd.name) : undefined;
-        if (match) {
-          deckId = match.id;
-        } else {
-          const deck: Deck = {
-            id: newId(),
-            name: pd.name ?? 'Importados',
-            color: pd.color ?? DECK_COLORS[(existing.length + di) % DECK_COLORS.length],
-            createdAt: now + di,
-            updatedAt: now,
-          };
-          await db.decks.add(deck);
-          existing.push(deck);
-          deckId = deck.id;
-        }
+      let resolved: string | undefined = single;
+      if (!resolved) {
+        resolved = (pd.name ? existing.find((d) => d.name === pd.name) : undefined)?.id;
       }
-      deckIds.push(deckId);
+      // Baralho novo só é criado quando o primeiro card for realmente adicionado.
+      const ensureDeck = async (): Promise<string> => {
+        if (resolved) return resolved;
+        const deck: Deck = {
+          id: newId(),
+          name: pd.name ?? 'Importados',
+          color: pd.color ?? DECK_COLORS[(existing.length + di) % DECK_COLORS.length],
+          createdAt: now + di,
+          updatedAt: now,
+        };
+        await db.decks.add(deck);
+        existing.push(deck);
+        resolved = deck.id;
+        return deck.id;
+      };
 
       for (const [i, pc] of pd.cards.entries()) {
         if (pc.progress) {
           const current = await db.cards.get(pc.progress.id);
           if (current && current.updatedAt >= pc.progress.updatedAt) continue;
+          // Card já existente fica no baralho em que está, mesmo que o nome tenha mudado.
+          const deckId = current ? current.deckId : await ensureDeck();
           await db.cards.put({
             id: pc.progress.id,
             deckId,
@@ -53,7 +58,9 @@ export async function importParsed(
             updatedAt: pc.progress.updatedAt || now,
             fsrs: pc.progress.fsrs,
           });
+          deckIds.add(deckId);
         } else {
+          const deckId = await ensureDeck();
           await db.cards.add({
             id: newId(),
             deckId,
@@ -63,11 +70,12 @@ export async function importParsed(
             updatedAt: now,
             fsrs: newFsrsState(now),
           });
+          deckIds.add(deckId);
         }
         imported++;
       }
     }
-    return { imported, deckIds: [...new Set(deckIds)] };
+    return { imported, deckIds: [...deckIds] };
   });
 }
 
