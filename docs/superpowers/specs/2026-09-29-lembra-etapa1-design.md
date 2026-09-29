@@ -74,7 +74,31 @@ A maquete aprovada é a referência visual. O visual é o de "ficha de papel":
 | **Importar** | "Copiar prompt para IA", Colar JSON ou Abrir arquivo, pré-visualização com marcar/desmarcar cada card e aviso de cards suspeitos, baralho de destino, "Importar N cards" | Não |
 | **Ajustes** | Minutos por dia, cards novos por dia, Exportar tudo (backup), Importar backup; "Avançado": retenção desejada, hora de início do dia | Sim (Ajustes ativo) |
 
-A tela **Ajustes** não está na maquete. Segue o mesmo visual e mostra só o que está na tabela.
+A tela **Ajustes** não está na maquete. Segue o mesmo visual e mostra só o que está na tabela,
+mais o link "Como o Lembra funciona", que reabre o onboarding.
+
+### 3.1 Onboarding (primeira abertura)
+
+Quatro telas curtas que deslizam para o lado, com "Pular" sempre visível e pontos indicando a
+posição. O texto fala com a voz do próprio Lembra e **não menciona o Anki**.
+
+1. **"Estude menos, lembre mais."** Uma curva do esquecimento desenhada em SVG. Texto: "A gente
+   esquece rápido. Cada revisão na hora certa deixa o esquecimento mais lento. O Lembra revisa
+   cada coisa pouco antes de você esquecer."
+2. **"Tente lembrar antes de virar."** Um card de prática que gira ao toque (o mesmo `FlipCard`
+   do estudo). Frente: "Qual é a capital da Austrália?"; verso: "Canberra". Texto: "Puxar a
+   resposta da memória fixa muito mais do que reler."
+3. **"Diga como foi."** Os quatro botões de resposta, só ilustrativos. Texto: "Acertou? O card
+   volta daqui a dias, depois semanas. Errou? Volta logo." Nota pequena: "Repetição espaçada e
+   recordação ativa estão entre as técnicas de estudo com mais evidência (Dunlosky et al., 2013)."
+4. **"Pouco, todo dia."** Duas dicas: "Uma ideia por card." e "Alguns minutos por dia valem mais
+   que horas de vez em quando." A pessoa escolhe os minutos por dia (5, 10 ou 15; 10
+   pré-selecionado) e toca em "Criar meu primeiro baralho". Isso salva a escolha, marca o
+   onboarding como visto e abre a tela Hoje com a folha de novo baralho aberta.
+
+- Aparece quando `Settings.onboardedAt` não existe. "Pular" também marca `onboardedAt`.
+- Rota própria (`/welcome`). A tela Hoje redireciona para ela na primeira abertura.
+- Reaberto por Ajustes, onde termina voltando para Ajustes, sem abrir a folha de baralho.
 
 Criar e editar baralho acontece numa folha inferior (bottom sheet) com nome e cor. Editar um card
 reaproveita a tela Criar, já preenchida.
@@ -92,7 +116,7 @@ Card      { id, deckId, front, back, createdAt, updatedAt, deletedAt?,
             reps, lapses, state /* New|Learning|Review|Relearning */, lastReview? }
 ReviewLog { id, cardId, rating /* 1..4 */, reviewedAt, prevCard /* snapshot para desfazer */ }
 Settings  { id: 'settings', minutesPerDay: 10, newPerDay: 10,
-            desiredRetention: 0.9, dayStartHour: 4, lastExportAt? }
+            desiredRetention: 0.9, dayStartHour: 4, lastExportAt?, onboardedAt? }
 ```
 
 - **Índices:** `cards` por `deckId` e por `due`; `reviewLogs` por `reviewedAt` e por `cardId`.
