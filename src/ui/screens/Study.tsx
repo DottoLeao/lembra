@@ -47,12 +47,6 @@ export default function Study() {
     };
   }, [deckId, extraNew]);
 
-  // cards de aprendizagem ficam prontos com o tempo
-  useEffect(() => {
-    const t = window.setInterval(() => setNow(Date.now()), 15_000);
-    return () => window.clearInterval(t);
-  }, []);
-
   const scheduler = useMemo(() => (settings ? createScheduler(settings.desiredRetention) : null), [settings]);
   const card = session ? currentCard(session, now) : undefined;
 
@@ -86,7 +80,7 @@ export default function Study() {
     try {
       const t = Date.now();
       const { card: updated, log } = await answerCard(card.id, rating, scheduler, t);
-      const next = applyAnswer(session, updated, rating, studyDayEnd(t, settings.dayStartHour));
+      const next = applyAnswer(session, updated, rating, studyDayEnd(t, settings.dayStartHour), t);
       setUndoStack((u) => [...u, { logId: log.id, rating }]);
       setFlipped(false);
       setNow(t);
