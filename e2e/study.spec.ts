@@ -70,3 +70,18 @@ test('sem nada para estudar mostra estado vazio', async ({ page }) => {
   await page.goto('/#/study');
   await expect(page.getByText('Nada para estudar agora')).toBeVisible();
 });
+
+test('resumo mostra cards, acerto, sequência e botões', async ({ page }) => {
+  await setup(page, TWO);
+  await page.getByRole('button', { name: 'Mostrar resposta' }).click();
+  await page.getByRole('button', { name: /^Fácil/ }).click();
+  await page.getByRole('button', { name: 'Mostrar resposta' }).click();
+  await page.getByRole('button', { name: /^Fácil/ }).click();
+  await expect(page.getByRole('heading', { name: 'Pronto por hoje' })).toBeVisible();
+  await expect(page.locator('.stat').nth(0)).toContainText('2');
+  await expect(page.locator('.stat').nth(1)).toContainText('100%');
+  await expect(page.getByText('1 dia seguido')).toBeVisible();
+  await expect(page.getByRole('link', { name: 'Estudar mais 10 novos' })).toBeVisible();
+  await page.getByRole('link', { name: 'Voltar ao início' }).click();
+  await expect(page.getByText('Tudo em dia por hoje.')).toBeVisible();
+});
