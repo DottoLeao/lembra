@@ -1,5 +1,5 @@
 import { useLiveQuery } from 'dexie-react-hooks';
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router';
 import { listDeckCards } from '../../data/cards';
 import { listDecks } from '../../data/decks';
@@ -16,6 +16,13 @@ const WARNING_TEXT: Record<ImportWarning, string> = {
 };
 const NEW = 'new';
 
+interface Edits {
+  owner: ParsedDeck | null;
+  target?: string;
+  name?: string;
+  manual: Record<number, boolean>; // true = marcado
+}
+
 export default function Import() {
   const [params] = useSearchParams();
   const navigate = useNavigate();
@@ -24,44 +31,39 @@ export default function Import() {
 
   const [mode, setMode] = useState<'paste' | 'file'>('paste');
   const [text, setText] = useState('');
-  const [target, setTarget] = useState(NEW);
-  const [newName, setNewName] = useState('');
-  const [unchecked, setUnchecked] = useState<Set<number>>(new Set());
   const [busy, setBusy] = useState(false);
+  // escolhas do usuário valem só para o JSON colado atual (some quando o JSON muda)
+  const [edits, setEdits] = useState<Edits>({ owner: null, manual: {} });
 
   const parsed = useMemo(() => (text.trim() ? parseCardJson(text) : null), [text]);
   const single: ParsedDeck | null = parsed?.ok && parsed.decks.length === 1 ? parsed.decks[0] : null;
 
-  useEffect(() => {
-    if (!decks || !single) return;
-    const fromUrl = decks.find((d) => d.id === params.get('deck'));
-    const byName = single.name ? decks.find((d) => d.name === single.name) : undefined;
-    setTarget(fromUrl?.id ?? byName?.id ?? NEW);
-    setNewName(single.name ?? '');
-  }, [decks, single, params]);
+  const mine = edits.owner === single ? edits : null;
+  const fromUrl = decks?.find((d) => d.id === params.get('deck'));
+  const byName = single?.name ? decks?.find((d) => d.name === single.name) : undefined;
+  const target = mine?.target ?? fromUrl?.id ?? byName?.id ?? NEW;
+  const newName = mine?.name ?? single?.name ?? '';
+
+  function edit(patch: Partial<Omit<Edits, 'owner'>>) {
+    setEdits((prev) => ({ ...(prev.owner === single ? prev : { owner: single, manual: {} }), ...patch }));
+  }
 
   const existing = useLiveQuery(
     () => (target !== NEW ? listDeckCards(target) : Promise.resolve([] as Card[])),
     [target],
   );
   const warnings = useMemo(() => (single ? findWarnings(single.cards, existing ?? []) : []), [single, existing]);
-
-  useEffect(() => {
-    setUnchecked(new Set(warnings.flatMap((w, i) => (w ? [i] : []))));
-  }, [warnings]);
+  // estado final de cada card: escolha manual, senão desmarcado se tiver aviso
+  const isOff = (i: number) => !(mine?.manual[i] ?? !warnings[i]);
+  const offCount = single ? single.cards.filter((_, i) => isOff(i)).length : 0;
 
   const totalCards = parsed?.ok ? parsed.decks.reduce((n, d) => n + d.cards.length, 0) : 0;
-  const selectedCount = single ? single.cards.length - unchecked.size : totalCards;
+  const selectedCount = single ? single.cards.length - offCount : totalCards;
   const targetName = decks?.find((d) => d.id === target)?.name;
   const canImport = Boolean(parsed?.ok) && selectedCount > 0 && !busy && !(single && target === NEW && !newName.trim());
 
   function toggle(i: number) {
-    setUnchecked((prev) => {
-      const next = new Set(prev);
-      if (next.has(i)) next.delete(i);
-      else next.add(i);
-      return next;
-    });
+    edit({ manual: { ...mine?.manual, [i]: isOff(i) } });
   }
 
   async function copyPrompt() {
@@ -90,7 +92,7 @@ export default function Import() {
         toImport = [{
           ...single,
           name: target === NEW ? newName.trim() : single.name,
-          cards: single.cards.filter((_, i) => !unchecked.has(i)),
+          cards: single.cards.filter((_, i) => !isOff(i)),
         }];
         if (target !== NEW) opts = { targetDeckId: target };
       }
@@ -149,7 +151,7 @@ export default function Import() {
         <>
           <label className="field">
             Baralho de destino
-            <select className="select" value={target} onChange={(e) => setTarget(e.target.value)}>
+            <select className="select" value={target} onChange={(e) => edit({ target: e.target.value })}>
               <option value={NEW}>Novo baralho</option>
               {decks?.map((d) => <option key={d.id} value={d.id}>{d.name}</option>)}
             </select>
@@ -157,7 +159,7 @@ export default function Import() {
           {target === NEW && (
             <label className="field">
               Nome do novo baralho
-              <input className="input" value={newName} onChange={(e) => setNewName(e.target.value)} placeholder="Ex.: Revolução Francesa" />
+              <input className="input" value={newName} onChange={(e) => edit({ name: e.target.value })} placeholder="Ex.: Revolução Francesa" />
             </label>
           )}
           <div className="row-between">
@@ -166,7 +168,7 @@ export default function Import() {
           </div>
           <div className="list">
             {single.cards.map((c, i) => {
-              const off = unchecked.has(i);
+              const off = isOff(i);
               const warning = warnings[i];
               return (
                 <label key={i} className={off ? 'preview-item preview-item--off' : 'preview-item'}>

@@ -1,4 +1,5 @@
 import { expect, test } from '@playwright/test';
+import { createCards, createDeck } from './helpers';
 
 const FENCE = '`'.repeat(3);
 const longBack = 'x'.repeat(320);
@@ -50,4 +51,47 @@ test('abre arquivo .json', async ({ page }) => {
     buffer: Buffer.from('[{"front":"a","back":"b"}]'),
   });
   await expect(page.locator('.preview-item')).toHaveCount(1);
+});
+
+const PAIR = '{"deck":"Inglês","cards":[{"front":"Put off","back":"Adiar"},{"front":"Give up","back":"Desistir"}]}';
+
+async function deckWithPutOff(page: import('@playwright/test').Page): Promise<string> {
+  await createDeck(page, 'Inglês');
+  await createCards(page, 'Inglês', [['Put off', 'Adiar']]);
+  await page.goto('/#/decks');
+  await page.getByRole('link', { name: /Inglês/ }).click();
+  await expect(page.getByRole('heading', { name: 'Inglês' })).toBeVisible();
+  return page.url().split('/deck/')[1];
+}
+
+test('destino da URL: duplicado vem desmarcado e o botão cita o baralho', async ({ page }) => {
+  const id = await deckWithPutOff(page);
+  await page.goto(`/#/import?deck=${id}`);
+  await page.getByLabel('JSON dos cards').fill(PAIR);
+  const items = page.locator('.preview-item');
+  await expect(items).toHaveCount(2);
+  await expect(items.nth(0)).toContainText('Já existe neste baralho');
+  await expect(items.nth(0).getByRole('checkbox')).not.toBeChecked();
+  await expect(items.nth(1).getByRole('checkbox')).toBeChecked();
+  await expect(page.getByRole('button', { name: 'Importar 1 card para “Inglês”' })).toBeVisible();
+});
+
+test('desmarcação manual sobrevive à troca de destino', async ({ page }) => {
+  const id = await deckWithPutOff(page);
+  await page.goto(`/#/import?deck=${id}`);
+  await page.getByLabel('JSON dos cards').fill(PAIR);
+  const items = page.locator('.preview-item');
+  await items.nth(1).getByRole('checkbox').uncheck();
+  await page.getByLabel('Baralho de destino').selectOption({ label: 'Novo baralho' });
+  await expect(items.nth(1).getByRole('checkbox')).not.toBeChecked();
+  await page.getByLabel('Baralho de destino').selectOption({ label: 'Inglês' });
+  await expect(items.nth(1).getByRole('checkbox')).not.toBeChecked();
+  await expect(items.nth(0).getByRole('checkbox')).not.toBeChecked();
+});
+
+test('novo baralho sem nome desabilita a importação', async ({ page }) => {
+  await page.goto('/#/import');
+  await page.getByLabel('JSON dos cards').fill(PAIR);
+  await page.getByLabel('Nome do novo baralho').fill('');
+  await expect(page.getByRole('button', { name: /^Importar/ })).toBeDisabled();
 });
