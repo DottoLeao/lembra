@@ -34,7 +34,9 @@ function lastBackupText(s: Settings): string {
   if (s.lastExportAt === undefined) return 'Nenhum backup ainda.';
   const sameDay = studyDayKey(s.lastExportAt, s.dayStartHour) === studyDayKey(Date.now(), s.dayStartHour);
   if (sameDay) return 'Último backup: hoje.';
-  return `Último backup: ${new Intl.DateTimeFormat('pt-BR', { day: 'numeric', month: 'long' }).format(s.lastExportAt)}.`;
+  const sameYear = new Date(s.lastExportAt).getFullYear() === new Date().getFullYear();
+  const format = new Intl.DateTimeFormat('pt-BR', { day: 'numeric', month: 'long', ...(sameYear ? {} : { year: 'numeric' }) });
+  return `Último backup: ${format.format(s.lastExportAt)}.`;
 }
 
 export default function SettingsScreen() {
