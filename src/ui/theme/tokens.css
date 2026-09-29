@@ -1,0 +1,65 @@
+:root {
+  --paper: #f3eee4;
+  --paper-2: #f7f2e8;
+  --paper-3: #eae2d3;
+  --card: #fffdf8;
+  --ink: #1e1a16;
+  --ink-2: #4a433c;
+  --muted: #6b6259;
+  --line: #e4dccd;
+  --line-2: #d5cbb9;
+  --accent: #b5482a;
+  --nav-muted: #cfc6b6;
+  --again-bg: #f6ddd5;
+  --again-fg: #8a2e17;
+  --hard-bg: #f3e6c8;
+  --hard-fg: #6e4e0a;
+  --good-bg: #d9e5f1;
+  --good-fg: #1f4a73;
+  --easy-bg: #d6eadf;
+  --easy-fg: #1f5a45;
+  --serif: 'Fraunces Variable', Georgia, serif;
+  --sans: 'Instrument Sans', system-ui, sans-serif;
+  --radius: 14px;
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--sans);
+  -webkit-tap-highlight-color: transparent;
+  overscroll-behavior: none;
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+  color: inherit;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
