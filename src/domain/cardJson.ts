@@ -1,4 +1,5 @@
 import type { FsrsState } from './scheduler';
+import type { Card, Deck } from './types';
 
 export interface ParsedCard {
   front: string;
@@ -97,3 +98,71 @@ export function parseCardJson(text: string): ParseResult {
   if (decks.every((d) => d.cards.length === 0)) return fail('Nenhum card encontrado.');
   return { ok: true, decks };
 }
+
+function cardToJson(c: Card, includeProgress: boolean) {
+  if (!includeProgress) return { front: c.front, back: c.back };
+  return { front: c.front, back: c.back, id: c.id, createdAt: c.createdAt, updatedAt: c.updatedAt, fsrs: c.fsrs };
+}
+
+export function serializeDeck(deck: { name: string }, cards: Card[], includeProgress: boolean): string {
+  return JSON.stringify(
+    { version: 1, deck: deck.name, cards: cards.map((c) => cardToJson(c, includeProgress)) },
+    null,
+    2,
+  );
+}
+
+export function serializeBackup(entries: { deck: Deck; cards: Card[] }[]): string {
+  return JSON.stringify(
+    {
+      version: 1,
+      decks: entries.map(({ deck, cards }) => ({
+        deck: deck.name,
+        color: deck.color,
+        cards: cards.map((c) => cardToJson(c, true)),
+      })),
+    },
+    null,
+    2,
+  );
+}
+
+export const MAX_BACK_LENGTH = 300;
+export type ImportWarning = 'long' | 'duplicate';
+
+const normalize = (s: string) => s.trim().toLowerCase().replace(/\s+/g, ' ');
+const cardKey = (c: { front: string; back: string }) => `${normalize(c.front)}\u0000${normalize(c.back)}`;
+
+export function findWarnings(
+  cards: ParsedCard[],
+  existing: { front: string; back: string }[],
+): (ImportWarning | null)[] {
+  const seen = new Set(existing.map(cardKey));
+  return cards.map((c) => {
+    const key = cardKey(c);
+    const duplicate = seen.has(key);
+    seen.add(key);
+    if (duplicate) return 'duplicate';
+    if (c.back.length > MAX_BACK_LENGTH) return 'long';
+    return null;
+  });
+}
+
+export const AI_PROMPT = `Crie flashcards para eu estudar com repetição espaçada.
+
+Tema: [ESCREVA AQUI O TEMA E O NÍVEL, ex.: "phrasal verbs de inglês, nível intermediário"]
+Quantidade: 20 cards
+
+Regras:
+- Um único fato ou ideia por card.
+- Pergunta clara na frente; resposta curta no verso (menos de 200 caracteres).
+- Sem cards duplicados ou vagos.
+
+Responda SOMENTE com JSON válido neste formato, sem texto antes ou depois:
+{
+  "version": 1,
+  "deck": "Nome do baralho",
+  "cards": [
+    { "front": "Pergunta", "back": "Resposta" }
+  ]
+}`;
