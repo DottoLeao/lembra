@@ -1,4 +1,5 @@
 import { Component, useState, type ReactNode } from 'react';
+import { isRouteErrorResponse, useRouteError } from 'react-router';
 import { exportBackupJson } from '../../data/importExport';
 import { shareJson } from '../share';
 
@@ -36,4 +37,9 @@ export class ErrorBoundary extends Component<{ children: ReactNode }, { error: u
   render() {
     return this.state.error !== null ? <ErrorScreen error={this.state.error} /> : this.props.children;
   }
+}
+
+export function RouteError() {
+  const error = useRouteError();
+  return <ErrorScreen error={isRouteErrorResponse(error) ? new Error(`${error.status} ${error.statusText}`) : error} />;
 }

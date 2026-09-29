@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react';
+import { useEffect, type ReactNode } from 'react';
 
 export function BottomSheet({ open, title, onClose, children }: {
   open: boolean;
@@ -6,6 +6,15 @@ export function BottomSheet({ open, title, onClose, children }: {
   onClose: () => void;
   children: ReactNode;
 }) {
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+    };
+    document.addEventListener('keydown', onKey);
+    return () => document.removeEventListener('keydown', onKey);
+  }, [open, onClose]);
+
   if (!open) return null;
   return (
     <div className="sheet-backdrop" onClick={onClose}>

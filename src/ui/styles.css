@@ -47,7 +47,7 @@
 .btn--secondary { background: var(--card); border-color: var(--line-2); }
 .btn--danger { background: var(--again-bg); color: var(--again-fg); }
 .btn--block { width: 100%; }
-.link-btn { border: none; background: none; padding: 10px 0; color: var(--accent); font-size: 14px; font-weight: 600; cursor: pointer; }
+.link-btn { min-height: 44px; min-width: 44px; border: none; background: none; padding: 10px 0; color: var(--accent); font-size: 14px; font-weight: 600; cursor: pointer; }
 .pill {
   display: inline-flex; align-items: center; gap: 6px; padding: 8px 12px;
   background: var(--card); border: 1px solid var(--line); border-radius: 999px; font-size: 14px; font-weight: 600;
@@ -160,7 +160,7 @@
 }
 .input { width: 100%; }
 .swatches { display: flex; gap: 10px; }
-.swatch { width: 40px; height: 40px; padding: 0; border-radius: 50%; border: 3px solid transparent; cursor: pointer; }
+.swatch { width: 44px; height: 44px; padding: 0; border-radius: 50%; border: 3px solid transparent; cursor: pointer; }
 .swatch[aria-pressed='true'] { border-color: var(--ink); }
 
 /* ---------- toast e atualização ---------- */
@@ -171,7 +171,7 @@
   display: flex; align-items: center; gap: 12px; font-size: 15px; animation: fade 0.2s ease;
 }
 .toast span { flex: 1; }
-.toast__action { border: none; background: none; padding: 6px; color: #f0b7a6; font-size: 15px; font-weight: 700; cursor: pointer; }
+.toast__action { min-height: 44px; min-width: 44px; border: none; background: none; padding: 6px; color: #f0b7a6; font-size: 15px; font-weight: 700; cursor: pointer; }
 .update-banner {
   position: fixed; top: calc(8px + var(--safe-top)); left: 50%; transform: translateX(-50%); z-index: 40;
   border: none; border-radius: 999px; padding: 10px 16px; background: var(--accent); color: var(--card);
@@ -253,7 +253,7 @@
 .week__dot--today { background: var(--ink); border: none; }
 
 /* ---------- editor ---------- */
-.editor__deck { align-self: flex-start; height: 40px; border-radius: 999px; font-size: 14px; font-weight: 600; }
+.editor__deck { align-self: flex-start; height: 44px; min-height: 44px; border-radius: 999px; font-size: 14px; font-weight: 600; }
 .field-card {
   flex: 1; min-height: 170px; max-height: 260px; padding: 14px 18px;
   border: 1px solid var(--line); border-radius: 18px; display: flex; flex-direction: column; gap: 8px;
@@ -273,7 +273,7 @@
 }
 .ai-card p { margin: 2px 0 0; font-size: 13px; color: var(--ink-2); }
 .segmented { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 4px; padding: 4px; background: #e9e2d5; border-radius: 12px; }
-.segmented button { height: 40px; border: none; border-radius: 9px; background: transparent; font-size: 14px; font-weight: 500; color: var(--ink-2); cursor: pointer; }
+.segmented button { height: 44px; min-height: 44px; border: none; border-radius: 9px; background: transparent; font-size: 14px; font-weight: 500; color: var(--ink-2); cursor: pointer; }
 .segmented button[aria-pressed='true'] { background: var(--card); font-weight: 600; color: var(--ink); }
 .code {
   width: 100%; min-height: 120px; padding: 12px 14px; resize: vertical;
