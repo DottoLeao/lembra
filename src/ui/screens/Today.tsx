@@ -7,7 +7,6 @@ import { studyDayKey } from '../../domain/studyDay';
 import { DeckRow } from '../components/DeckRow';
 import { DeckSheet } from '../components/DeckSheet';
 import { Icon } from '../components/Icon';
-import { TabBar } from '../components/TabBar';
 import { BACKUP_ERROR, useSafeAction, useToast } from '../components/Toast';
 import { SAVED_MESSAGE, shareJson } from '../share';
 import { readSession, writeSession } from '../storage';
@@ -128,7 +127,6 @@ export default function Today() {
       )}
 
       <DeckSheet open={sheet} onClose={closeSheet} />
-      <TabBar />
     </main>
   );
 }

@@ -17,6 +17,8 @@
   flex-direction: column;
   gap: 20px;
 }
+.route-stage { position: relative; height: 100%; overflow-x: clip; }
+.route { height: 100%; }
 .screen--tabs { padding-bottom: calc(120px + var(--safe-bottom)); }
 .screen--focus { height: 100dvh; min-height: 0; padding-bottom: calc(24px + var(--safe-bottom)); }
 .title-serif { font-family: var(--serif); font-weight: 600; letter-spacing: -0.02em; margin: 0; }

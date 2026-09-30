@@ -11,7 +11,6 @@ import type { Card } from '../../domain/types';
 import { BottomSheet } from '../components/BottomSheet';
 import { DeckSheet } from '../components/DeckSheet';
 import { Icon } from '../components/Icon';
-import { TabBar } from '../components/TabBar';
 import { DELETE_ERROR, UNDO_ERROR, UNDO_MS, useSafeAction, useToast } from '../components/Toast';
 import { copyText, SAVED_MESSAGE, shareJson, slugify } from '../share';
 
@@ -46,7 +45,6 @@ export default function DeckScreen() {
           <p className="empty__title">Baralho não encontrado</p>
           <Link to="/decks" className="btn btn--secondary">Ver baralhos</Link>
         </div>
-        <TabBar />
       </main>
     );
   }
@@ -156,7 +154,6 @@ export default function DeckScreen() {
       </BottomSheet>
 
       <DeckSheet open={renameOpen} onClose={() => setRenameOpen(false)} deck={deck} />
-      <TabBar createHref={`/card/new?deck=${deck.id}`} />
     </main>
   );
 }

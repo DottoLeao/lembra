@@ -3,7 +3,6 @@ import { useState } from 'react';
 import { getTodayOverview } from '../../data/overview';
 import { DeckRow } from '../components/DeckRow';
 import { DeckSheet } from '../components/DeckSheet';
-import { TabBar } from '../components/TabBar';
 
 export default function Decks() {
   const overview = useLiveQuery(() => getTodayOverview(Date.now()), []);
@@ -27,7 +26,6 @@ export default function Decks() {
           </div>
         ))}
       <DeckSheet open={sheet} onClose={() => setSheet(false)} />
-      <TabBar />
     </main>
   );
 }

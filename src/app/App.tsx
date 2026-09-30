@@ -1,6 +1,7 @@
 import { MotionConfig } from 'motion/react';
 import { createHashRouter } from 'react-router';
 import { RouterProvider } from 'react-router/dom';
+import { AnimatedOutlet } from '../ui/components/AnimatedOutlet';
 import { AutoBackup } from '../ui/components/AutoBackup';
 import { ErrorBoundary, RouteError } from '../ui/components/ErrorScreen';
 import { ToastProvider } from '../ui/components/Toast';
@@ -18,6 +19,7 @@ import Welcome from '../ui/screens/Welcome';
 
 const router = createHashRouter([
   {
+    element: <AnimatedOutlet />,
     errorElement: <RouteError />,
     children: [
       { path: '/', element: <Today /> },

@@ -5,7 +5,6 @@ import { exportBackupJson, markExported } from '../../data/importExport';
 import { getSettings, updateSettings } from '../../data/settings';
 import { studyDayKey } from '../../domain/studyDay';
 import type { Settings } from '../../domain/types';
-import { TabBar } from '../components/TabBar';
 import { BACKUP_ERROR, useSafeAction, useToast } from '../components/Toast';
 import { isNativeApp } from '../platform';
 import { SAVED_MESSAGE, shareJson } from '../share';
@@ -107,7 +106,6 @@ export default function SettingsScreen() {
           onChange={(v) => set({ dayStartHour: v })} />
       </details>
 
-      <TabBar />
     </main>
   );
 }
