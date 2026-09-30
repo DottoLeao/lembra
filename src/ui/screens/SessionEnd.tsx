@@ -1,4 +1,5 @@
 import { useLiveQuery } from 'dexie-react-hooks';
+import { motion } from 'motion/react';
 import { Link, Navigate, useLocation } from 'react-router';
 import { forecastTomorrow, getStreak } from '../../data/overview';
 import { SECONDS_PER_CARD } from '../../domain/queue';
@@ -30,7 +31,10 @@ export default function SessionEnd() {
   return (
     <main className="screen">
       <div className="end__hero">
-        <div className="end__check"><Icon name="check" size={34} stroke={2.4} /></div>
+        <motion.div className="end__check" initial={{ scale: 0.6, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}
+          transition={{ type: 'spring', stiffness: 380, damping: 18 }}>
+          <Icon name="check" size={34} stroke={2.4} />
+        </motion.div>
         <h1 className="title-serif" style={{ fontSize: 34 }}>Pronto por hoje</h1>
         <p>O que tu estudaste volta na hora certa.</p>
       </div>
