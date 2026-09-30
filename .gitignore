@@ -7,3 +7,6 @@ playwright-report
 tsconfig.tsbuildinfo
 
 .vercel
+*.jks
+*.keystore
+android/app/release/

@@ -3,6 +3,7 @@ import { RouterProvider } from 'react-router/dom';
 import { ErrorBoundary, RouteError } from '../ui/components/ErrorScreen';
 import { ToastProvider } from '../ui/components/Toast';
 import { UpdatePrompt } from '../ui/components/UpdatePrompt';
+import { isNativeApp } from '../ui/platform';
 import CardEditor from '../ui/screens/CardEditor';
 import DeckScreen from '../ui/screens/Deck';
 import Decks from '../ui/screens/Decks';
@@ -36,7 +37,7 @@ export function App() {
     <ErrorBoundary>
       <ToastProvider>
         <RouterProvider router={router} />
-        <UpdatePrompt />
+        {!isNativeApp() && <UpdatePrompt />}
       </ToastProvider>
     </ErrorBoundary>
   );
