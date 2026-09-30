@@ -30,7 +30,7 @@
 .spacer { flex: 1; }
 .stack { display: flex; flex-direction: column; gap: 10px; }
 .row-between { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
-.list { display: flex; flex-direction: column; gap: 10px; }
+.list { position: relative; display: flex; flex-direction: column; gap: 10px; }
 
 /* ---------- botões ---------- */
 .icon-btn {

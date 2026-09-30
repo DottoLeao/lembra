@@ -5,6 +5,7 @@ import { exportBackupJson, markExported } from '../../data/importExport';
 import { getTodayOverview } from '../../data/overview';
 import { studyDayKey } from '../../domain/studyDay';
 import { DeckRow } from '../components/DeckRow';
+import { MotionItem, MotionList } from '../components/MotionList';
 import { DeckSheet } from '../components/DeckSheet';
 import { Icon } from '../components/Icon';
 import { BACKUP_ERROR, useSafeAction, useToast } from '../components/Toast';
@@ -120,9 +121,9 @@ export default function Today() {
             <h2 className="title-serif section-title">Baralhos</h2>
             <button type="button" className="link-btn" onClick={() => setSheet(true)}>+ Novo baralho</button>
           </div>
-          <div className="list">
-            {decks.map((d) => <DeckRow key={d.deck.id} overview={d} />)}
-          </div>
+          <MotionList>
+            {decks.map((d, i) => <MotionItem key={d.deck.id} index={i}><DeckRow overview={d} /></MotionItem>)}
+          </MotionList>
         </>
       )}
 

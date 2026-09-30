@@ -7,6 +7,7 @@ import { importParsed } from '../../data/importExport';
 import { AI_PROMPT, findWarnings, parseCardJson, type ImportWarning, type ParsedDeck } from '../../domain/cardJson';
 import type { Card } from '../../domain/types';
 import { Icon } from '../components/Icon';
+import { MotionItem, MotionList } from '../components/MotionList';
 import { useToast } from '../components/Toast';
 import { copyText } from '../share';
 import { requestPersistentStorage } from '../storage';
@@ -168,22 +169,24 @@ export default function Import() {
             <h2 className="title-serif section-title">Pré-visualização</h2>
             <span className="small muted">{selectedCount} de {single.cards.length} marcados</span>
           </div>
-          <div className="list">
+          <MotionList>
             {single.cards.map((c, i) => {
               const off = isOff(i);
               const warning = warnings[i];
               return (
-                <label key={i} className={off ? 'preview-item preview-item--off' : 'preview-item'}>
-                  <input type="checkbox" checked={!off} onChange={() => toggle(i)} />
-                  <span className="preview-item__text">
-                    <span style={{ fontFamily: 'var(--serif)', fontSize: 16 }}>{c.front}</span>
-                    <span className="small muted">{c.back.length > 140 ? `${c.back.slice(0, 140)}…` : c.back}</span>
-                    {warning && <span className="preview-item__warning">{WARNING_TEXT[warning]}</span>}
-                  </span>
-                </label>
+                <MotionItem key={i} index={i}>
+                  <label className={off ? 'preview-item preview-item--off' : 'preview-item'}>
+                    <input type="checkbox" checked={!off} onChange={() => toggle(i)} />
+                    <span className="preview-item__text">
+                      <span style={{ fontFamily: 'var(--serif)', fontSize: 16 }}>{c.front}</span>
+                      <span className="small muted">{c.back.length > 140 ? `${c.back.slice(0, 140)}…` : c.back}</span>
+                      {warning && <span className="preview-item__warning">{WARNING_TEXT[warning]}</span>}
+                    </span>
+                  </label>
+                </MotionItem>
               );
             })}
-          </div>
+          </MotionList>
         </>
       )}
 

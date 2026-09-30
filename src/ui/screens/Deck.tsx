@@ -11,6 +11,7 @@ import type { Card } from '../../domain/types';
 import { BottomSheet } from '../components/BottomSheet';
 import { DeckSheet } from '../components/DeckSheet';
 import { Icon } from '../components/Icon';
+import { MotionItem, MotionList } from '../components/MotionList';
 import { DELETE_ERROR, UNDO_ERROR, UNDO_MS, useSafeAction, useToast } from '../components/Toast';
 import { copyText, SAVED_MESSAGE, shareJson, slugify } from '../share';
 
@@ -117,21 +118,23 @@ export default function DeckScreen() {
           <Link to={`/card/new?deck=${deck.id}`} className="btn btn--primary">Criar card</Link>
         </div>
       ) : (
-        <div className="list">
-          {shown.map((c) => {
+        <MotionList>
+          {shown.map((c, i) => {
             const chip = chipFor(c, now, end);
             return (
-              <Link key={c.id} to={`/card/${c.id}/edit`} className="card-item">
-                <span className="card-item__text">
-                  <span className="card-item__front">{c.front}</span>
-                  <span className="card-item__back">{c.back}</span>
-                </span>
-                <span className={`chip chip--${chip.tone}`}>{chip.label}</span>
-              </Link>
+              <MotionItem key={c.id} index={i}>
+                <Link to={`/card/${c.id}/edit`} className="card-item">
+                  <span className="card-item__text">
+                    <span className="card-item__front">{c.front}</span>
+                    <span className="card-item__back">{c.back}</span>
+                  </span>
+                  <span className={`chip chip--${chip.tone}`}>{chip.label}</span>
+                </Link>
+              </MotionItem>
             );
           })}
-          {shown.length === 0 && <p className="muted" style={{ textAlign: 'center' }}>Nada encontrado.</p>}
-        </div>
+          {shown.length === 0 && <p key="nada" className="muted" style={{ textAlign: 'center' }}>Nada encontrado.</p>}
+        </MotionList>
       )}
 
       <BottomSheet open={exportOpen} onClose={() => setExportOpen(false)} title="Exportar baralho">

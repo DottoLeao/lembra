@@ -2,6 +2,7 @@ import { useLiveQuery } from 'dexie-react-hooks';
 import { useState } from 'react';
 import { getTodayOverview } from '../../data/overview';
 import { DeckRow } from '../components/DeckRow';
+import { MotionItem, MotionList } from '../components/MotionList';
 import { DeckSheet } from '../components/DeckSheet';
 
 export default function Decks() {
@@ -21,9 +22,9 @@ export default function Decks() {
             <p>Um baralho junta os cards de um mesmo assunto.</p>
           </div>
         ) : (
-          <div className="list">
-            {overview.decks.map((d) => <DeckRow key={d.deck.id} overview={d} />)}
-          </div>
+          <MotionList>
+            {overview.decks.map((d, i) => <MotionItem key={d.deck.id} index={i}><DeckRow overview={d} /></MotionItem>)}
+          </MotionList>
         ))}
       <DeckSheet open={sheet} onClose={() => setSheet(false)} />
     </main>
