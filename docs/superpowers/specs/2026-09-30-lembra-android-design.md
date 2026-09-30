@@ -65,8 +65,8 @@ de hoje (backup completo com progresso). Depois de gravar: atualiza
 **Falhas:** o backup automático nunca interrompe o estudo. Se falhar (permissão negada, disco
 cheio), registra no console e mostra um toast discreto no máximo uma vez por abertura do app:
 "Não consegui salvar o backup automático." Se o Android recusar gravar em Documentos, pedir a
-permissão com `Filesystem.requestPermissions()` uma vez; se continuar negado, o interruptor em
-Ajustes mostra "Sem permissão para salvar em Documentos".
+permissão com `Filesystem.requestPermissions()` antes de gravar; se continuar negado, vale o
+mesmo toast único.
 
 **Ajustes:** no grupo Backup, só no app nativo, uma linha com interruptor "Backup automático"
 e o texto "Último: <data>" (ou "Ainda não feito"). `Settings` ganha `autoBackup?: boolean` e
@@ -77,8 +77,8 @@ e o texto "Último: <data>" (ou "Ainda não feito"). `Settings` ganha `autoBacku
 
 ## 5. APK pelo GitHub
 
-- Workflow `.github/workflows/android.yml`, disparado por push em `main` e manualmente
-  (`workflow_dispatch`):
+- Workflow `.github/workflows/android.yml`, disparado por push em `main` e `etapa-1` e
+  manualmente (`workflow_dispatch`, que só funciona depois que o arquivo estiver na `main`):
   1. Node 24, `npm ci`, `npm run build`, `npx cap sync android`;
   2. Java 21 (Temurin) e Gradle via `android/gradlew`;
   3. `assembleRelease` assinado com a chave do repositório;
