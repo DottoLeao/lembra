@@ -13,13 +13,13 @@ function ForgettingCurve() {
   return (
     <svg className="curve" viewBox="0 0 320 200" role="img"
       aria-label="Curva do esquecimento: sem revisão a lembrança cai rápido; com revisões ela cai cada vez mais devagar">
-      <line x1="24" y1="176" x2="304" y2="176" stroke="#D5CBB9" strokeWidth="2" />
-      <line x1="24" y1="16" x2="24" y2="176" stroke="#D5CBB9" strokeWidth="2" />
-      <path d="M24 24 C 60 120, 110 160, 300 170" fill="none" stroke="#D5CBB9" strokeWidth="3" strokeDasharray="6 6" />
+      <line x1="24" y1="176" x2="304" y2="176" style={{ stroke: 'var(--line-2)' }} strokeWidth="2" />
+      <line x1="24" y1="16" x2="24" y2="176" style={{ stroke: 'var(--line-2)' }} strokeWidth="2" />
+      <path d="M24 24 C 60 120, 110 160, 300 170" fill="none" style={{ stroke: 'var(--line-2)' }} strokeWidth="3" strokeDasharray="6 6" />
       <path d="M24 24 C 40 70, 60 90, 70 96 L 70 24 C 95 60, 120 76, 140 80 L 140 24 C 175 48, 215 58, 240 60 L 240 24 C 265 34, 290 40, 304 42"
-        fill="none" stroke="#B5482A" strokeWidth="3.5" strokeLinejoin="round" />
-      {[70, 140, 240].map((x) => <circle key={x} cx={x} cy="24" r="6" fill="#1E1A16" />)}
-      <text x="30" y="194" fontSize="12" fill="#6B6259">tempo →</text>
+        fill="none" style={{ stroke: 'var(--accent)' }} strokeWidth="3.5" strokeLinejoin="round" />
+      {[70, 140, 240].map((x) => <circle key={x} cx={x} cy="24" r="6" style={{ fill: 'var(--ink)' }} />)}
+      <text x="30" y="194" fontSize="12" style={{ fill: 'var(--muted)' }}>tempo →</text>
     </svg>
   );
 }
