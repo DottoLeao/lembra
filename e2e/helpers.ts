@@ -14,6 +14,8 @@ export async function createDeck(page: Page, name: string): Promise<void> {
   const sheet = page.getByRole('dialog');
   await sheet.getByLabel('Nome do baralho').fill(name);
   await sheet.getByRole('button', { name: 'Criar baralho' }).click();
+  // com movimento, a folha leva um instante saindo: espera sumir antes de seguir para outra tela
+  await expect(page.getByRole('dialog', { includeHidden: true })).toHaveCount(0);
   await expect(page.getByRole('link', { name: new RegExp(name) })).toBeVisible();
 }
 

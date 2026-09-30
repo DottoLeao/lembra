@@ -37,6 +37,19 @@ test.describe('com movimento', () => {
     expect(errors).toEqual([]);
   });
 
+  test('voltar com a folha aberta fecha a folha junto com a tela', async ({ page }) => {
+    await createDeck(page, 'Capitais');
+    await page.getByRole('link', { name: /Capitais/ }).click();
+    await page.getByRole('button', { name: 'Exportar' }).click();
+    await expect(page.getByRole('dialog', { name: 'Exportar baralho' })).toBeVisible();
+    await page.goBack();
+    await expect(page).toHaveURL(/#\/decks$/);
+    // lido uma vez, logo depois da troca: a folha que sai não pode receber toques por cima da tela nova
+    expect(await page.evaluate(() => [...document.querySelectorAll('.sheet-backdrop')].every((b) => (b as HTMLElement).inert))).toBe(true);
+    await expect(page.locator('.sheet-backdrop')).toHaveCount(0);
+    await expect(page.getByRole('heading', { name: 'Baralhos', level: 1 })).toBeVisible();
+  });
+
   test('a contagem do número grande termina no valor exato', async ({ page }) => {
     await createDeck(page, 'Capitais');
     await createCards(page, 'Capitais', [['Capital da Austrália?', 'Canberra'], ['Capital do Canadá?', 'Ottawa']]);

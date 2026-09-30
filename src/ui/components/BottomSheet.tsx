@@ -12,6 +12,9 @@ export function BottomSheet({ open, title, onClose, children }: {
   children: ReactNode;
 }) {
   const reduce = useReducedMotion();
+  // presença da camada de tela (AnimatedOutlet): quando a tela sai, a folha sai junto,
+  // já que o portal a tira de dentro da camada inerte
+  const screenPresent = useIsPresent();
 
   useEffect(() => {
     if (!open) return;
@@ -22,7 +25,7 @@ export function BottomSheet({ open, title, onClose, children }: {
     return () => document.removeEventListener('keydown', onKey);
   }, [open, onClose]);
 
-  const sheet = open && <Sheet key="sheet" title={title} onClose={onClose}>{children}</Sheet>;
+  const sheet = open && screenPresent && <Sheet key="sheet" title={title} onClose={onClose}>{children}</Sheet>;
   // no portal, o transform da tela em transição não prende o position: fixed da folha
   return createPortal(reduce ? sheet : <AnimatePresence>{sheet}</AnimatePresence>, document.body);
 }
@@ -36,7 +39,7 @@ function Sheet({ title, onClose, children }: { title: string; onClose: () => voi
   }
 
   return (
-    <motion.div className="sheet-backdrop" onClick={onClose} inert={!isPresent}
+    <motion.div className="sheet-backdrop" onClick={onClose} inert={!isPresent} aria-hidden={isPresent ? undefined : true}
       initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.2 }}>
       <motion.div className="sheet" role="dialog" aria-modal="true" aria-label={title} onClick={(e) => e.stopPropagation()}
         initial={{ y: '100%' }} animate={{ y: 0 }} exit={{ y: '100%', transition: { duration: 0.22, ease: 'easeIn' } }}
