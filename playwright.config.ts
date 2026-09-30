@@ -8,6 +8,7 @@ export default defineConfig({
     baseURL: 'http://localhost:4173',
     locale: 'pt-BR',
     serviceWorkers: 'block',
+    reducedMotion: 'reduce',
   },
   webServer: {
     command: 'npm run build && npm run preview -- --port 4173 --strictPort',
