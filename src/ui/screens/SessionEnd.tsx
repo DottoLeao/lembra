@@ -3,6 +3,7 @@ import { Link, Navigate, useLocation } from 'react-router';
 import { forecastTomorrow, getStreak } from '../../data/overview';
 import { SECONDS_PER_CARD } from '../../domain/queue';
 import { parseDayKey } from '../../domain/studyDay';
+import { CountUp } from '../components/CountUp';
 import { Icon } from '../components/Icon';
 
 interface EndState {
@@ -35,9 +36,9 @@ export default function SessionEnd() {
       </div>
 
       <div className="stats">
-        <div className="stat"><span className="stat__value">{state.answered}</span><span className="stat__label">cards</span></div>
-        <div className="stat"><span className="stat__value">{accuracy}%</span><span className="stat__label">de acerto</span></div>
-        <div className="stat"><span className="stat__value">{minutes}</span><span className="stat__label">{minutes === 1 ? 'minuto' : 'minutos'}</span></div>
+        <div className="stat"><span className="stat__value"><CountUp value={state.answered} /></span><span className="stat__label">cards</span></div>
+        <div className="stat"><span className="stat__value"><CountUp value={accuracy} />%</span><span className="stat__label">de acerto</span></div>
+        <div className="stat"><span className="stat__value"><CountUp value={minutes} /></span><span className="stat__label">{minutes === 1 ? 'minuto' : 'minutos'}</span></div>
       </div>
 
       {data && (

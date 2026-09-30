@@ -36,4 +36,11 @@ test.describe('com movimento', () => {
     await expect(nav).toHaveCount(1);
     expect(errors).toEqual([]);
   });
+
+  test('a contagem do número grande termina no valor exato', async ({ page }) => {
+    await createDeck(page, 'Capitais');
+    await createCards(page, 'Capitais', [['Capital da Austrália?', 'Canberra'], ['Capital do Canadá?', 'Ottawa']]);
+    await openApp(page);
+    await expect(page.locator('.hero__number')).toHaveText('2');
+  });
 });

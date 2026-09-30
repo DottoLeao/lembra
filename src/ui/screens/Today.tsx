@@ -4,6 +4,7 @@ import { Link, useNavigate, useSearchParams } from 'react-router';
 import { exportBackupJson, markExported } from '../../data/importExport';
 import { getTodayOverview } from '../../data/overview';
 import { studyDayKey } from '../../domain/studyDay';
+import { CountUp } from '../components/CountUp';
 import { DeckRow } from '../components/DeckRow';
 import { MotionItem, MotionList } from '../components/MotionList';
 import { DeckSheet } from '../components/DeckSheet';
@@ -89,7 +90,7 @@ export default function Today() {
           {total > 0 ? (
             <>
               <div className="hero__count">
-                <span className="hero__number">{total}</span>
+                <span className="hero__number"><CountUp value={total} /></span>
                 <span className="hero__unit">{total === 1 ? 'card' : 'cards'}</span>
               </div>
               <p className="hero__meta">
