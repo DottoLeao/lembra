@@ -7,6 +7,7 @@ import { studyDayKey } from '../../domain/studyDay';
 import type { Settings } from '../../domain/types';
 import { TabBar } from '../components/TabBar';
 import { BACKUP_ERROR, useSafeAction, useToast } from '../components/Toast';
+import { isNativeApp } from '../platform';
 import { shareJson } from '../share';
 
 function SelectRow({ label, hint, value, options, onChange }: {
@@ -72,6 +73,21 @@ export default function SettingsScreen() {
 
       <section className="settings-group">
         <h2 className="settings-group__title">Backup</h2>
+        {isNativeApp() && (
+          <div className="settings-row">
+            <div>
+              <label htmlFor="auto-backup" className="settings-row__label">Backup automático</label>
+              <p className="settings-row__hint">
+                Em Documentos/Lembra ·{' '}
+                {settings.lastAutoBackupAt
+                  ? `último: ${new Intl.DateTimeFormat('pt-BR', { day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' }).format(settings.lastAutoBackupAt)}`
+                  : 'ainda não feito'}
+              </p>
+            </div>
+            <input id="auto-backup" type="checkbox" role="switch" checked={settings.autoBackup !== false}
+              onChange={(e) => set({ autoBackup: e.target.checked })} style={{ width: 44, height: 44, accentColor: 'var(--ink)' }} />
+          </div>
+        )}
         <button type="button" className="settings-action" onClick={() => run(backup, BACKUP_ERROR)}>Exportar tudo</button>
         <Link to="/import" className="settings-action">Importar backup</Link>
         <p className="small muted" style={{ margin: '10px 0' }}>{lastBackupText(settings)}</p>

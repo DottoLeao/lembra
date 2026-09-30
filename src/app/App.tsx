@@ -1,5 +1,6 @@
 import { createHashRouter } from 'react-router';
 import { RouterProvider } from 'react-router/dom';
+import { AutoBackup } from '../ui/components/AutoBackup';
 import { ErrorBoundary, RouteError } from '../ui/components/ErrorScreen';
 import { ToastProvider } from '../ui/components/Toast';
 import { UpdatePrompt } from '../ui/components/UpdatePrompt';
@@ -37,6 +38,7 @@ export function App() {
     <ErrorBoundary>
       <ToastProvider>
         <RouterProvider router={router} />
+        <AutoBackup />
         {!isNativeApp() && <UpdatePrompt />}
       </ToastProvider>
     </ErrorBoundary>

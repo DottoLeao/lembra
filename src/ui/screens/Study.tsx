@@ -10,9 +10,10 @@ import { applyAnswer, applyUndo, currentCard, remaining, startSession, type Sess
 import { studyDayEnd } from '../../domain/studyDay';
 import type { Rating, Settings } from '../../domain/types';
 import { AnswerButtons } from '../components/AnswerButtons';
+import { runNativeAutoBackup } from '../components/AutoBackup';
 import { FlipCard } from '../components/FlipCard';
 import { Icon } from '../components/Icon';
-import { UNDO_ERROR, useSafeAction } from '../components/Toast';
+import { UNDO_ERROR, useSafeAction, useToast } from '../components/Toast';
 
 interface UndoEntry {
   logId: string;
@@ -33,6 +34,7 @@ export default function Study() {
   const [now, setNow] = useState(() => Date.now());
   const busy = useRef(false);
   const run = useSafeAction();
+  const toast = useToast();
 
   useEffect(() => {
     let alive = true;
@@ -67,6 +69,7 @@ export default function Study() {
       const rest = await getStudyQueue(Date.now());
       if (rest.cards.length === 0) await markDayCompleted(Date.now());
     }
+    if (s.answered > 0) await runNativeAutoBackup(Date.now(), true, (message) => toast({ message }));
     if (s.answered === 0) {
       navigate('/', { replace: true });
       return;
