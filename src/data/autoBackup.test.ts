@@ -38,6 +38,7 @@ describe('runAutoBackup', () => {
   });
 
   it('dentro de 24 h não repete, a não ser forçado; no mesmo dia sobrescreve', async () => {
+    await createDeck('Inglês');
     const { fs, files } = fakeFs();
     await runAutoBackup(fs, now);
     expect(await runAutoBackup(fs, now + HOUR)).toBe('skipped');
@@ -54,14 +55,25 @@ describe('runAutoBackup', () => {
 
   it('apaga os mais antigos além de 7 e não toca em arquivos alheios', async () => {
     const old = ['01', '02', '03', '04', '05', '06', '07', '08'].map((d) => `lembra-backup-2026-09-${d}.json`);
+    await createDeck('Inglês');
     const { fs, removed, files } = fakeFs([...old, 'foto.jpg']);
     await runAutoBackup(fs, now);
     expect(removed.sort()).toEqual(['lembra-backup-2026-09-01.json', 'lembra-backup-2026-09-02.json']);
     expect(files.has('foto.jpg')).toBe(true);
   });
 
+  it('sem nenhum baralho não grava nem apaga nada', async () => {
+    const old = ['01', '02', '03', '04', '05', '06', '07', '08'].map((d) => `lembra-backup-2026-09-${d}.json`);
+    const { fs, files, removed } = fakeFs(old);
+    expect(await runAutoBackup(fs, now, { force: true })).toBe('empty');
+    expect(files.size).toBe(8);
+    expect(removed).toEqual([]);
+    expect((await getSettings()).lastAutoBackupAt).toBeUndefined();
+  });
+
   it('erro ao apagar arquivo antigo não interrompe', async () => {
     const old = ['01', '02', '03', '04', '05', '06', '07', '08'].map((d) => `lembra-backup-2026-09-${d}.json`);
+    await createDeck('Inglês');
     const { fs } = fakeFs(old);
     fs.remove = async () => {
       throw new Error('arquivo de outra instalação');
@@ -70,6 +82,7 @@ describe('runAutoBackup', () => {
   });
 
   it('erro ao gravar é repassado e não marca a data', async () => {
+    await createDeck('Inglês');
     const { fs } = fakeFs();
     fs.write = async () => {
       throw new Error('sem permissão');

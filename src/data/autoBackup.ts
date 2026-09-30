@@ -1,4 +1,5 @@
 import { backupFileName, filesToDelete, shouldAutoBackup } from '../domain/autoBackup';
+import { listDecks } from './decks';
 import { exportBackupJson } from './importExport';
 import { getSettings, updateSettings } from './settings';
 
@@ -13,10 +14,12 @@ export async function runAutoBackup(
   fs: BackupFs,
   now: number,
   opts: { force?: boolean } = {},
-): Promise<'saved' | 'skipped' | 'disabled'> {
+): Promise<'saved' | 'skipped' | 'disabled' | 'empty'> {
   const settings = await getSettings();
   if (settings.autoBackup === false) return 'disabled';
   if (!opts.force && !shouldAutoBackup(settings.lastAutoBackupAt, now)) return 'skipped';
+  // banco vazio (ex.: dados do app limpos): não sobrescreve nem apaga os backups bons
+  if ((await listDecks()).length === 0) return 'empty';
 
   await fs.write(backupFileName(now, settings.dayStartHour), await exportBackupJson());
   await updateSettings({ lastAutoBackupAt: now });
