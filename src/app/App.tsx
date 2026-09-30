@@ -1,3 +1,4 @@
+import { MotionConfig } from 'motion/react';
 import { createHashRouter } from 'react-router';
 import { RouterProvider } from 'react-router/dom';
 import { AutoBackup } from '../ui/components/AutoBackup';
@@ -35,12 +36,14 @@ const router = createHashRouter([
 
 export function App() {
   return (
-    <ErrorBoundary>
-      <ToastProvider>
-        <RouterProvider router={router} />
-        <AutoBackup />
-        {!isNativeApp() && <UpdatePrompt />}
-      </ToastProvider>
-    </ErrorBoundary>
+    <MotionConfig reducedMotion="user">
+      <ErrorBoundary>
+        <ToastProvider>
+          <RouterProvider router={router} />
+          <AutoBackup />
+          {!isNativeApp() && <UpdatePrompt />}
+        </ToastProvider>
+      </ErrorBoundary>
+    </MotionConfig>
   );
 }
