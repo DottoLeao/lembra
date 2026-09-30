@@ -1,4 +1,5 @@
 import type { FsrsState } from './scheduler';
+import type { ThemePref } from './theme';
 
 export type Rating = 1 | 2 | 3 | 4;
 
@@ -42,6 +43,8 @@ export interface Settings {
   /** Backup automático em Documentos/Lembra (só no app Android). Ausente = ligado. */
   autoBackup?: boolean;
   lastAutoBackupAt?: number;
+  /** Tema escolhido em Ajustes. Ausente = automático. */
+  theme?: ThemePref;
 }
 
 export const DEFAULT_SETTINGS: Settings = {
