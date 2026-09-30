@@ -214,6 +214,7 @@
 .flip__drag-hint { position: absolute; top: 18px; padding: 6px 12px; border-radius: 999px; font-size: 13px; font-weight: 600; }
 .flip__drag-hint--right { right: 18px; background: var(--good-bg); color: var(--good-fg); }
 .flip__drag-hint--left { left: 18px; background: var(--again-bg); color: var(--again-fg); }
+.study__stage { position: relative; flex: 1; min-height: 0; display: flex; }
 .study__bottom { display: flex; flex-direction: column; gap: 10px; }
 .answer-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
 .answer-btn {

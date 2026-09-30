@@ -1,4 +1,5 @@
 import { useLiveQuery } from 'dexie-react-hooks';
+import { AnimatePresence, useReducedMotion } from 'motion/react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router';
 import { getDeck } from '../../data/decks';
@@ -11,7 +12,7 @@ import { studyDayEnd } from '../../domain/studyDay';
 import type { Rating, Settings } from '../../domain/types';
 import { AnswerButtons } from '../components/AnswerButtons';
 import { runNativeAutoBackup } from '../components/AutoBackup';
-import { FlipCard } from '../components/FlipCard';
+import { FlipCard, type ExitDirection } from '../components/FlipCard';
 import { Icon } from '../components/Icon';
 import { UNDO_ERROR, useSafeAction, useToast } from '../components/Toast';
 
@@ -32,6 +33,8 @@ export default function Study() {
   const [flipped, setFlipped] = useState(false);
   const [undoStack, setUndoStack] = useState<UndoEntry[]>([]);
   const [now, setNow] = useState(() => Date.now());
+  const [exitDir, setExitDir] = useState<ExitDirection>(null);
+  const reduce = useReducedMotion();
   const busy = useRef(false);
   const run = useSafeAction();
   const toast = useToast();
@@ -85,6 +88,7 @@ export default function Study() {
       const { card: updated, log } = await answerCard(card.id, rating, scheduler, t);
       const next = applyAnswer(session, updated, rating, studyDayEnd(t, settings.dayStartHour), t);
       setUndoStack((u) => [...u, { logId: log.id, rating }]);
+      setExitDir(rating >= 3 ? 'right' : 'left');
       setFlipped(false);
       setNow(t);
       setSession(next);
@@ -101,6 +105,7 @@ export default function Study() {
     try {
       const restored = await undoAnswer(last.logId);
       setUndoStack((u) => u.slice(0, -1));
+      setExitDir(null);
       setSession(applyUndo(session, restored, last.rating));
       setFlipped(true);
     } finally {
@@ -122,6 +127,16 @@ export default function Study() {
     );
   }
 
+  const flipCard = (
+    <FlipCard
+      key={`${card.id}:${card.fsrs.reps}`}
+      front={card.front}
+      back={card.back}
+      flipped={flipped}
+      onFlip={() => setFlipped(true)}
+      onSwipe={(dir) => run(() => answer(dir === 'right' ? 3 : 1))}
+    />
+  );
   const total = session.answered + remaining(session);
   const position = session.answered + 1;
 
@@ -146,14 +161,9 @@ export default function Study() {
         </button>
       </div>
 
-      <FlipCard
-        key={`${card.id}:${card.fsrs.reps}`}
-        front={card.front}
-        back={card.back}
-        flipped={flipped}
-        onFlip={() => setFlipped(true)}
-        onSwipe={(dir) => run(() => answer(dir === 'right' ? 3 : 1))}
-      />
+      <div className="study__stage">
+        {reduce ? flipCard : <AnimatePresence mode="popLayout" initial={false} custom={exitDir}>{flipCard}</AnimatePresence>}
+      </div>
 
       <div className="study__bottom">
         {flipped ? (

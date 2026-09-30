@@ -1,26 +1,42 @@
-import { motion, useMotionValue, useTransform } from 'motion/react';
-import { useState } from 'react';
+import { motion, useIsPresent, useMotionValue, useTransform, type Variants } from 'motion/react';
+import { useState, type Ref } from 'react';
 
 export const SWIPE_THRESHOLD = 100;
 
-export function FlipCard({ front, back, flipped, onFlip, onSwipe }: {
+/** Para onde o card respondido sai: direita para Bom/Fácil, esquerda para Errei/Difícil. */
+export type ExitDirection = 'left' | 'right' | null;
+
+const cardVariants: Variants = {
+  enter: { opacity: 0, scale: 0.96 },
+  center: { opacity: 1, scale: 1, transition: { type: 'spring', stiffness: 380, damping: 34 } },
+  exit: (dir: ExitDirection) => ({
+    opacity: 0,
+    x: dir === 'right' ? 400 : dir === 'left' ? -400 : 0,
+    rotate: dir === 'right' ? 8 : dir === 'left' ? -8 : 0,
+    transition: { duration: 0.25, ease: 'easeIn' },
+  }),
+};
+
+export function FlipCard({ front, back, flipped, onFlip, onSwipe, ref }: {
   front: string;
   back: string;
   flipped: boolean;
   onFlip: () => void;
   onSwipe: (dir: 'left' | 'right') => void;
+  ref?: Ref<HTMLDivElement>;
 }) {
   const x = useMotionValue(0);
   const tilt = useTransform(x, [-200, 200], [-8, 8]);
   const [dragHint, setDragHint] = useState<'left' | 'right' | null>(null);
+  // o card que está saindo não aceita toque nem arrasto
+  const isPresent = useIsPresent();
 
   return (
-    <div className="flip">
+    <motion.div ref={ref} className="flip" variants={cardVariants} initial="enter" animate="center" exit="exit"
+      inert={!isPresent} aria-hidden={isPresent ? undefined : true}>
       <motion.div
         className="flip__drag"
         style={{ x, rotate: tilt }}
-        initial={{ opacity: 0, y: 16 }}
-        animate={{ opacity: 1, y: 0 }}
         drag={flipped ? 'x' : false}
         dragConstraints={{ left: 0, right: 0 }}
         dragElastic={0.9}
@@ -52,6 +68,6 @@ export function FlipCard({ front, back, flipped, onFlip, onSwipe }: {
           </div>
         </motion.div>
       </motion.div>
-    </div>
+    </motion.div>
   );
 }
