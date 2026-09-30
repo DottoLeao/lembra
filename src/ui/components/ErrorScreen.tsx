@@ -1,14 +1,14 @@
 import { Component, useState, type ReactNode } from 'react';
 import { isRouteErrorResponse, useRouteError } from 'react-router';
 import { exportBackupJson } from '../../data/importExport';
-import { shareJson } from '../share';
+import { SAVED_MESSAGE, shareJson } from '../share';
 
 export function ErrorScreen({ error }: { error: unknown }) {
   const [exportMsg, setExportMsg] = useState('');
   async function rescue() {
     try {
-      await shareJson('lembra-resgate.json', await exportBackupJson());
-      setExportMsg('Arquivo gerado.');
+      const result = await shareJson('lembra-resgate.json', await exportBackupJson());
+      setExportMsg(result === 'saved' ? `${SAVED_MESSAGE}.` : 'Arquivo gerado.');
     } catch {
       setExportMsg('Não foi possível exportar os dados.');
     }

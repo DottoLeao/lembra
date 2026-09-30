@@ -8,6 +8,23 @@ async function ensurePermission(): Promise<void> {
   if (status.publicStorage !== 'granted') await Filesystem.requestPermissions();
 }
 
+async function writeToFolder(name: string, data: string): Promise<void> {
+  await ensurePermission();
+  await Filesystem.writeFile({
+    path: `${FOLDER}/${name}`,
+    data,
+    directory: Directory.Documents,
+    encoding: Encoding.UTF8,
+    recursive: true,
+  });
+}
+
+/** Salva um arquivo exportado em Documentos/Lembra; devolve o caminho para mostrar ao usuário. */
+export async function saveToDocuments(name: string, data: string): Promise<string> {
+  await writeToFolder(name, data);
+  return `Documentos/${FOLDER}/${name}`;
+}
+
 export const nativeBackupFs: BackupFs = {
   async list() {
     try {
@@ -17,16 +34,7 @@ export const nativeBackupFs: BackupFs = {
       return []; // pasta ainda não existe
     }
   },
-  async write(name, data) {
-    await ensurePermission();
-    await Filesystem.writeFile({
-      path: `${FOLDER}/${name}`,
-      data,
-      directory: Directory.Documents,
-      encoding: Encoding.UTF8,
-      recursive: true,
-    });
-  },
+  write: writeToFolder,
   async remove(name) {
     await Filesystem.deleteFile({ path: `${FOLDER}/${name}`, directory: Directory.Documents });
   },

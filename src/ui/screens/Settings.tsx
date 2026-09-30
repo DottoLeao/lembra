@@ -8,7 +8,7 @@ import type { Settings } from '../../domain/types';
 import { TabBar } from '../components/TabBar';
 import { BACKUP_ERROR, useSafeAction, useToast } from '../components/Toast';
 import { isNativeApp } from '../platform';
-import { shareJson } from '../share';
+import { SAVED_MESSAGE, shareJson } from '../share';
 
 function SelectRow({ label, hint, value, options, onChange }: {
   label: string;
@@ -54,7 +54,7 @@ export default function SettingsScreen() {
     const result = await shareJson(`lembra-backup-${studyDayKey(now, settings.dayStartHour)}.json`, await exportBackupJson());
     if (result !== 'cancelled') {
       await markExported(now);
-      toast({ message: 'Backup exportado' });
+      toast({ message: result === 'saved' ? SAVED_MESSAGE : 'Backup exportado' });
     }
   }
 
