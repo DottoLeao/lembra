@@ -39,6 +39,9 @@ export interface Settings {
   dayStartHour: number;
   lastExportAt?: number;
   onboardedAt?: number;
+  /** Backup automático em Documentos/Lembra (só no app Android). Ausente = ligado. */
+  autoBackup?: boolean;
+  lastAutoBackupAt?: number;
 }
 
 export const DEFAULT_SETTINGS: Settings = {
