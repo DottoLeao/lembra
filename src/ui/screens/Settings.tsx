@@ -4,10 +4,12 @@ import { Link } from 'react-router';
 import { exportBackupJson, markExported } from '../../data/importExport';
 import { getSettings, updateSettings } from '../../data/settings';
 import { studyDayKey } from '../../domain/studyDay';
+import type { ThemePref } from '../../domain/theme';
 import type { Settings } from '../../domain/types';
 import { BACKUP_ERROR, useSafeAction, useToast } from '../components/Toast';
 import { isNativeApp } from '../platform';
 import { SAVED_MESSAGE, shareJson } from '../share';
+import { applyTheme } from '../theme/applyTheme';
 
 function SelectRow({ label, hint, value, options, onChange }: {
   label: string;
@@ -30,6 +32,12 @@ function SelectRow({ label, hint, value, options, onChange }: {
   );
 }
 
+const THEME_OPTIONS: { value: ThemePref; label: string }[] = [
+  { value: 'auto', label: 'Automático' },
+  { value: 'light', label: 'Claro' },
+  { value: 'dark', label: 'Escuro' },
+];
+
 function lastBackupText(s: Settings): string {
   if (s.lastExportAt === undefined) return 'Nenhum backup ainda.';
   const sameDay = studyDayKey(s.lastExportAt, s.dayStartHour) === studyDayKey(Date.now(), s.dayStartHour);
@@ -46,6 +54,11 @@ export default function SettingsScreen() {
 
   if (!settings) return <main className="screen screen--tabs" aria-busy="true" />;
   const set = (patch: Partial<Omit<Settings, 'id'>>) => run(() => updateSettings(patch));
+  const theme = settings.theme ?? 'auto';
+  const chooseTheme = (pref: ThemePref) => run(async () => {
+    await updateSettings({ theme: pref });
+    applyTheme(pref);
+  });
 
   async function backup() {
     if (!settings) return;
@@ -60,6 +73,18 @@ export default function SettingsScreen() {
   return (
     <main className="screen screen--tabs">
       <h1 className="title-serif page-title">Ajustes</h1>
+
+      <section className="settings-group" aria-labelledby="theme-title">
+        <h2 id="theme-title" className="settings-group__title">Tema</h2>
+        <div className="segmented segmented--3">
+          {THEME_OPTIONS.map((o) => (
+            <button key={o.value} type="button" aria-pressed={theme === o.value} onClick={() => chooseTheme(o.value)}>
+              {o.label}
+            </button>
+          ))}
+        </div>
+        <p className="settings-row__hint" style={{ margin: '8px 0 12px' }}>Automático segue o tema do celular.</p>
+      </section>
 
       <section className="settings-group">
         <SelectRow label="Minutos por dia" hint="Quantas revisões cabem no teu dia." value={settings.minutesPerDay}

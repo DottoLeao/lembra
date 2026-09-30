@@ -4,6 +4,16 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <meta name="theme-color" content="#F3EEE4" />
+    <script>
+      // tema antes do CSS, para não piscar claro ao abrir no escuro (o banco confirma depois)
+      (function () {
+        var pref = 'auto';
+        try { pref = localStorage.getItem('lembra-theme') || 'auto'; } catch (e) {}
+        var dark = pref === 'dark' || (pref !== 'light' && matchMedia('(prefers-color-scheme: dark)').matches);
+        document.documentElement.dataset.theme = dark ? 'dark' : 'light';
+        if (dark) document.querySelector('meta[name="theme-color"]').setAttribute('content', '#16130F');
+      })();
+    </script>
     <meta name="description" content="Flashcards com repetição espaçada" />
     <link rel="icon" href="/favicon.ico" sizes="48x48" />
     <link rel="icon" href="/icon.svg" type="image/svg+xml" />
