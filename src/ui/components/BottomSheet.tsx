@@ -1,4 +1,9 @@
+import { AnimatePresence, motion, useIsPresent, useReducedMotion, type PanInfo } from 'motion/react';
 import { useEffect, type ReactNode } from 'react';
+import { createPortal } from 'react-dom';
+
+const CLOSE_OFFSET = 100;
+const CLOSE_VELOCITY = 500;
 
 export function BottomSheet({ open, title, onClose, children }: {
   open: boolean;
@@ -6,6 +11,8 @@ export function BottomSheet({ open, title, onClose, children }: {
   onClose: () => void;
   children: ReactNode;
 }) {
+  const reduce = useReducedMotion();
+
   useEffect(() => {
     if (!open) return;
     const onKey = (e: KeyboardEvent) => {
@@ -15,14 +22,30 @@ export function BottomSheet({ open, title, onClose, children }: {
     return () => document.removeEventListener('keydown', onKey);
   }, [open, onClose]);
 
-  if (!open) return null;
+  const sheet = open && <Sheet key="sheet" title={title} onClose={onClose}>{children}</Sheet>;
+  // no portal, o transform da tela em transição não prende o position: fixed da folha
+  return createPortal(reduce ? sheet : <AnimatePresence>{sheet}</AnimatePresence>, document.body);
+}
+
+function Sheet({ title, onClose, children }: { title: string; onClose: () => void; children: ReactNode }) {
+  // enquanto fecha, a folha não recebe toques nem aparece para leitores de tela
+  const isPresent = useIsPresent();
+
+  function onDragEnd(_: PointerEvent, info: PanInfo) {
+    if (info.offset.y > CLOSE_OFFSET || info.velocity.y > CLOSE_VELOCITY) onClose();
+  }
+
   return (
-    <div className="sheet-backdrop" onClick={onClose}>
-      <div className="sheet" role="dialog" aria-modal="true" aria-label={title} onClick={(e) => e.stopPropagation()}>
+    <motion.div className="sheet-backdrop" onClick={onClose} inert={!isPresent}
+      initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.2 }}>
+      <motion.div className="sheet" role="dialog" aria-modal="true" aria-label={title} onClick={(e) => e.stopPropagation()}
+        initial={{ y: '100%' }} animate={{ y: 0 }} exit={{ y: '100%', transition: { duration: 0.22, ease: 'easeIn' } }}
+        transition={{ type: 'spring', stiffness: 380, damping: 34 }}
+        drag="y" dragConstraints={{ top: 0, bottom: 0 }} dragElastic={{ top: 0, bottom: 0.6 }} onDragEnd={onDragEnd}>
         <div className="sheet__handle" />
         <h2 className="sheet__title">{title}</h2>
         {children}
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   );
 }
