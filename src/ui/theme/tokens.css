@@ -1,0 +1,131 @@
+:root {
+  color-scheme: light;
+  --paper: #f3eee4;
+  --paper-2: #f7f2e8;
+  --paper-3: #eae2d3;
+  --card: #fffdf8;
+  --ink: #1e1a16;
+  --ink-2: #4a433c;
+  --muted: #6b6259;
+  --line: #e4dccd;
+  --line-2: #d5cbb9;
+  --accent: #b5482a;
+  --nav-muted: #cfc6b6;
+  --again-bg: #f6ddd5;
+  --again-fg: #8a2e17;
+  --hard-bg: #f3e6c8;
+  --hard-fg: #6e4e0a;
+  --good-bg: #d9e5f1;
+  --good-fg: #1f4a73;
+  --easy-bg: #d6eadf;
+  --easy-fg: #1f5a45;
+  --tabbar-bg: #1e1a16;
+  --tab-pill-bg: #fffdf8;
+  --tab-pill-fg: #1e1a16;
+  --on-accent: #fffdf8;
+  --toast-bg: #1e1a16;
+  --toast-fg: #fffdf8;
+  --toast-action: #f0b7a6;
+  --code-bg: #1e1a16;
+  --code-fg: #e9e2d5;
+  --segmented-bg: #e9e2d5;
+  --segmented-on: #fffdf8;
+  --rule-red: #e7a493;
+  --rule-blue: #dce6f0;
+  --shadow: rgba(60, 40, 20, 0.45);
+  --backdrop: rgba(30, 26, 22, 0.4);
+  --dot-line: #b8ae9e;
+  --serif: 'Fraunces Variable', Georgia, serif;
+  --sans: 'Instrument Sans', system-ui, sans-serif;
+  --radius: 14px;
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+:root[data-theme='dark'] {
+  color-scheme: dark;
+  --paper: #16130f;
+  --paper-2: #1d1914;
+  --paper-3: #2a241d;
+  --card: #26211b;
+  --ink: #f1eadf;
+  --ink-2: #cfc6b6;
+  --muted: #a39889;
+  --line: #3a332b;
+  --line-2: #4a4238;
+  --accent: #e07a5a;
+  --nav-muted: #a39889;
+  --again-bg: #4a2418;
+  --again-fg: #f6c2b2;
+  --hard-bg: #43341a;
+  --hard-fg: #f0d9a6;
+  --good-bg: #1e3348;
+  --good-fg: #bcd6f0;
+  --easy-bg: #1d3a2e;
+  --easy-fg: #b6e0cb;
+  --tabbar-bg: #2e2822;
+  --tab-pill-bg: #f1eadf;
+  --tab-pill-fg: #16130f;
+  --on-accent: #16130f;
+  --toast-bg: #f1eadf;
+  --toast-fg: #16130f;
+  --toast-action: #a8402a;
+  --code-bg: #0e0c0a;
+  --code-fg: #e9e2d5;
+  --segmented-bg: #2a241d;
+  --segmented-on: #4a4238;
+  --rule-red: #7a3d2e;
+  --rule-blue: #2c3440;
+  --shadow: rgba(0, 0, 0, 0.6);
+  --backdrop: rgba(0, 0, 0, 0.6);
+  --dot-line: #5a5046;
+}
+
+/* transição só enquanto o tema troca (applyTheme põe e tira a classe) */
+@media (prefers-reduced-motion: no-preference) {
+  .theme-transition,
+  .theme-transition *,
+  .theme-transition *::before,
+  .theme-transition *::after {
+    transition: background-color 200ms, color 200ms, border-color 200ms !important;
+  }
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--sans);
+  -webkit-tap-highlight-color: transparent;
+  overscroll-behavior: none;
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+  color: inherit;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}

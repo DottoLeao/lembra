@@ -84,7 +84,7 @@ posição. O texto fala com a voz do próprio Lembra e **não menciona o Anki**.
 
 1. **"Estude menos, lembre mais."** Uma curva do esquecimento desenhada em SVG. Texto: "A gente
    esquece rápido. Cada revisão na hora certa deixa o esquecimento mais lento. O Lembra revisa
-   cada coisa pouco antes de você esquecer."
+   cada coisa pouco antes de tu esqueceres."
 2. **"Tente lembrar antes de virar."** Um card de prática que gira ao toque (o mesmo `FlipCard`
    do estudo). Frente: "Qual é a capital da Austrália?"; verso: "Canberra". Texto: "Puxar a
    resposta da memória fixa muito mais do que reler."
