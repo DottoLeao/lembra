@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Lembra</string>
+    <string name="title_activity_main">Lembra</string>
+    <string name="package_name">com.dottoleao.lembra</string>
+    <string name="custom_url_scheme">com.dottoleao.lembra</string>
+</resources>
