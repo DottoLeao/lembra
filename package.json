@@ -10,6 +10,7 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:e2e": "playwright test",
+    "screenshots": "playwright test -c playwright.store.config.ts",
     "assets": "node scripts/brand-assets.mjs && capacitor-assets generate --android --ios"
   },
   "dependencies": {
