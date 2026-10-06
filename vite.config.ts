@@ -29,6 +29,8 @@ export default defineConfig({
       },
       workbox: {
         globPatterns: ['**/*.{js,css,html,woff2,png,svg,ico}'],
+        // a política de privacidade é uma página própria (as lojas linkam para ela), não uma rota do app
+        navigateFallbackDenylist: [/^\/privacidade/],
       },
     }),
   ],

@@ -1,6 +1,6 @@
 # Lembra
 
-A spaced-repetition flashcard app that works offline, built mobile-first as a PWA and packaged for Android with Capacitor.
+A spaced-repetition flashcard app that works offline, built mobile-first as a PWA and packaged for Android and iOS with Capacitor.
 
 **Live demo:** https://lembra-nine.vercel.app &nbsp;·&nbsp; the interface is in Brazilian Portuguese ("Lembra" means "remembers").
 
@@ -35,7 +35,7 @@ Anki is powerful, but people abandon it: review piles grow after a few days away
 | Build | Vite 7, `vite-plugin-pwa` (service worker + manifest) |
 | Data | Dexie 4 (IndexedDB), local-first, no backend |
 | Scheduling | ts-fsrs |
-| Mobile | Capacitor 8 (Android) |
+| Mobile | Capacitor 8 (Android, iOS) |
 | Tests | Vitest (unit, 110 tests), Playwright (end-to-end) |
 | CI/CD | GitHub Actions builds and signs the APK; Vercel hosts the web app |
 
@@ -49,6 +49,8 @@ src/
   app/      App shell and routing
 e2e/        Playwright end-to-end tests
 android/    Capacitor Android project
+ios/        Capacitor iOS project
+assets/     Brand sources (SVG logo, icon, splash) and generated store art
 docs/       Design specs and implementation plans (Portuguese)
 ```
 
@@ -69,6 +71,10 @@ Requires Node 24 (the version used in CI).
 ## Android
 
 `.github/workflows/android.yml` builds a signed release APK on every push to `main` and publishes it to the `apk-latest` release. The signing key is stored in GitHub Secrets and is never committed.
+
+## App stores
+
+Pushing a `v*` tag builds a signed `.aab` for Google Play (`release-android.yml`) and an iOS build uploaded to TestFlight (`release-ios.yml`). Account setup, secrets and store listing copy are in [`docs/lojas`](docs/lojas) (Portuguese). Brand assets are regenerated with `npm run brand`.
 
 ## Roadmap
 
