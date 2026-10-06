@@ -1,11 +1,13 @@
 import { useLiveQuery } from 'dexie-react-hooks';
 import { motion } from 'motion/react';
+import { useEffect } from 'react';
 import { Link, Navigate, useLocation } from 'react-router';
 import { forecastTomorrow, getStreak } from '../../data/overview';
 import { SECONDS_PER_CARD } from '../../domain/queue';
 import { parseDayKey } from '../../domain/studyDay';
 import { CountUp } from '../components/CountUp';
 import { Icon } from '../components/Icon';
+import { sessionEndHaptic } from '../haptics';
 
 interface EndState {
   answered: number;
@@ -17,6 +19,9 @@ const WEEKDAY = ['D', 'S', 'T', 'Q', 'Q', 'S', 'S'];
 
 export default function SessionEnd() {
   const state = useLocation().state as EndState | null;
+  useEffect(() => {
+    void sessionEndHaptic();
+  }, []);
   const data = useLiveQuery(async () => {
     const now = Date.now();
     const [streak, tomorrow] = await Promise.all([getStreak(now), forecastTomorrow(now)]);

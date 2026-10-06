@@ -15,6 +15,7 @@ import { runNativeAutoBackup } from '../components/AutoBackup';
 import { FlipCard, type ExitDirection } from '../components/FlipCard';
 import { Icon } from '../components/Icon';
 import { UNDO_ERROR, useSafeAction, useToast } from '../components/Toast';
+import { answerHaptic } from '../haptics';
 
 interface UndoEntry {
   logId: string;
@@ -83,6 +84,7 @@ export default function Study() {
   async function answer(rating: Rating) {
     if (!card || !session || !scheduler || !settings || busy.current) return;
     busy.current = true;
+    void answerHaptic(rating); // vale para o botão e para o gesto de arrastar
     try {
       const t = Date.now();
       const { card: updated, log } = await answerCard(card.id, rating, scheduler, t);
