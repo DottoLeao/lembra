@@ -2,8 +2,9 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { saveToDocuments } from './nativeBackupFs';
 import { shareJson } from './share';
 
-vi.mock('./platform', () => ({ isNativeApp: () => true }));
-vi.mock('./nativeBackupFs', () => ({ saveToDocuments: vi.fn() }));
+vi.mock('./platform', () => ({ isNativeApp: () => true, nativePlatform: () => 'android' }));
+vi.mock('./nativeBackupFs', async (orig) => ({ ...(await orig<typeof import('./nativeBackupFs')>()), saveToDocuments: vi.fn() }));
+vi.mock('@capacitor/filesystem', () => ({ Directory: {}, Encoding: {}, Filesystem: {} }));
 
 const save = vi.mocked(saveToDocuments);
 

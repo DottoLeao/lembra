@@ -1,7 +1,15 @@
 import { Directory, Encoding, Filesystem } from '@capacitor/filesystem';
 import type { BackupFs } from '../data/autoBackup';
+import { nativePlatform } from './platform';
 
-const FOLDER = 'Lembra';
+// Android: Documentos/Lembra. iPhone: a raiz de Documentos do app, que o Arquivos mostra como "Lembra".
+const folder = () => (nativePlatform() === 'ios' ? '' : 'Lembra');
+const pathOf = (name: string) => (folder() ? `${folder()}/${name}` : name);
+
+/** Caminho que o usuário enxerga, para mostrar na tela. */
+export function visibleFolder(): string {
+  return nativePlatform() === 'ios' ? 'Arquivos › No meu iPhone › Lembra' : 'Documentos/Lembra';
+}
 
 async function ensurePermission(): Promise<void> {
   const status = await Filesystem.checkPermissions();
@@ -11,7 +19,7 @@ async function ensurePermission(): Promise<void> {
 async function writeToFolder(name: string, data: string): Promise<void> {
   await ensurePermission();
   await Filesystem.writeFile({
-    path: `${FOLDER}/${name}`,
+    path: pathOf(name),
     data,
     directory: Directory.Documents,
     encoding: Encoding.UTF8,
@@ -19,16 +27,16 @@ async function writeToFolder(name: string, data: string): Promise<void> {
   });
 }
 
-/** Salva um arquivo exportado em Documentos/Lembra; devolve o caminho para mostrar ao usuário. */
+/** Salva um arquivo exportado na pasta do Lembra; devolve o caminho para mostrar ao usuário. */
 export async function saveToDocuments(name: string, data: string): Promise<string> {
   await writeToFolder(name, data);
-  return `Documentos/${FOLDER}/${name}`;
+  return `${visibleFolder()}/${name}`;
 }
 
 export const nativeBackupFs: BackupFs = {
   async list() {
     try {
-      const result = await Filesystem.readdir({ path: FOLDER, directory: Directory.Documents });
+      const result = await Filesystem.readdir({ path: folder(), directory: Directory.Documents });
       return result.files.map((f) => f.name);
     } catch {
       return []; // pasta ainda não existe
@@ -36,6 +44,6 @@ export const nativeBackupFs: BackupFs = {
   },
   write: writeToFolder,
   async remove(name) {
-    await Filesystem.deleteFile({ path: `${FOLDER}/${name}`, directory: Directory.Documents });
+    await Filesystem.deleteFile({ path: pathOf(name), directory: Directory.Documents });
   },
 };

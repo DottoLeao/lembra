@@ -13,7 +13,7 @@ import { DeckSheet } from '../components/DeckSheet';
 import { Icon } from '../components/Icon';
 import { MotionItem, MotionList } from '../components/MotionList';
 import { DELETE_ERROR, UNDO_ERROR, UNDO_MS, useSafeAction, useToast } from '../components/Toast';
-import { copyText, SAVED_MESSAGE, shareJson, slugify } from '../share';
+import { copyText, savedMessage, shareJson, slugify } from '../share';
 
 const DAY = 86_400_000;
 
@@ -66,7 +66,7 @@ export default function DeckScreen() {
       return;
     }
     const suffix = mode === 'progress' ? '-progresso' : '';
-    if ((await shareJson(`${slugify(deck.name)}${suffix}.json`, json)) === 'saved') toast({ message: SAVED_MESSAGE });
+    if ((await shareJson(`${slugify(deck.name)}${suffix}.json`, json)) === 'saved') toast({ message: savedMessage() });
   }
 
   const exportDeck = (mode: 'cards' | 'progress' | 'copy') => run(() => exportAs(mode), 'Não foi possível exportar.');
