@@ -29,6 +29,8 @@ export default defineConfig({
       },
       workbox: {
         globPatterns: ['**/*.{js,css,html,woff2,png,svg,ico}'],
+        // páginas estáticas do site: quem já tem o PWA precisa ver a página, não o app
+        navigateFallbackDenylist: [/^\/privacidade/, /^\/suporte/],
       },
     }),
   ],
