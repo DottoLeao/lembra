@@ -32,7 +32,7 @@ Tudo aqui envolve senha, pagamento ou aceitar termos: é você quem faz. O resto
 
 ## 5. Apple: chave da API, segredos e registro do app
 1. App Store Connect › Usuários e acesso › Integrações › Chaves da API da App Store Connect › Gerar chave,
-   função **App Manager**. Baixe o `.p8` (só dá para baixar uma vez) e anote o Key ID e o Issuer ID.
+   função **Admin** (a assinatura gerenciada pela Apple no CI exige essa função). Baixe o `.p8` (só dá para baixar uma vez) e anote o Key ID e o Issuer ID.
 2. GitHub › repositório lembra › Settings › Secrets and variables › Actions:
    - Secrets: `APP_STORE_CONNECT_KEY_ID`, `APP_STORE_CONNECT_ISSUER_ID`,
      `APP_STORE_CONNECT_KEY_P8` (o conteúdo do `.p8` em base64: no PowerShell,
