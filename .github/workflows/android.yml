@@ -36,9 +36,9 @@ jobs:
         env:
           ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
 
-      - name: Compilar APK assinado
+      - name: Compilar APK e AAB assinados
         working-directory: android
-        run: chmod +x gradlew && ./gradlew assembleRelease --no-daemon
+        run: chmod +x gradlew && ./gradlew assembleRelease bundleRelease --no-daemon
         env:
           ANDROID_KEYSTORE_PATH: ${{ runner.temp }}/lembra.jks
           ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
@@ -55,3 +55,10 @@ jobs:
             gh release create apk-latest --prerelease --title "Lembra — APK mais recente" \
               --notes "APK do Lembra gerado automaticamente. Baixe lembra.apk no celular e instale."
           gh release upload apk-latest lembra.apk --clobber
+
+      - name: Guardar AAB para a Play
+        uses: actions/upload-artifact@v4
+        with:
+          name: lembra-aab
+          path: android/app/build/outputs/bundle/release/app-release.aab
+          retention-days: 30

@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
+    <!-- requestLegacyExternalStorage e as permissões de armazenamento abaixo são necessárias para o
+         backup em Documentos/Lembra no Android 9 e 10; do 11 em diante o sistema as ignora. Não remover. -->
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -36,7 +38,7 @@
         </provider>
     </application>
 
-    <!-- Permissions -->
+    <!-- Permissões (armazenamento: ver comentário acima de <application>) -->
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" android:maxSdkVersion="32" />
