@@ -10,6 +10,16 @@ for (const [path, title] of [['/privacidade/', 'Política de privacidade'], ['/s
   });
 }
 
+test('privacidade não promete que backups do iPhone sobrevivem a apagar o app', async ({ page }) => {
+  await page.goto('/privacidade/');
+  await expect(page.getByText('No iPhone, apagar o app apaga também a pasta Lembra do app Arquivos')).toBeVisible();
+});
+
+test('suporte avisa como guardar o backup do iPhone fora do app', async ({ page }) => {
+  await page.goto('/suporte/');
+  await expect(page.getByText('copie o backup para o iCloud Drive')).toBeVisible();
+});
+
 test.describe('com o PWA instalado', () => {
   test.use({ serviceWorkers: 'allow' });
 
