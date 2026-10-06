@@ -14,5 +14,5 @@
     "noUnusedParameters": true,
     "types": ["vite/client", "node", "vite-plugin-pwa/react"]
   },
-  "include": ["src", "e2e", "vite.config.ts", "playwright.config.ts", "capacitor.config.ts"]
+  "include": ["src", "e2e", "store", "vite.config.ts", "playwright.config.ts", "playwright.store.config.ts", "capacitor.config.ts"]
 }
