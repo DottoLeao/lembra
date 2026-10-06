@@ -10,7 +10,7 @@ import { MotionItem, MotionList } from '../components/MotionList';
 import { DeckSheet } from '../components/DeckSheet';
 import { Icon } from '../components/Icon';
 import { BACKUP_ERROR, useSafeAction, useToast } from '../components/Toast';
-import { SAVED_MESSAGE, shareJson } from '../share';
+import { savedMessage, shareJson } from '../share';
 import { readSession, writeSession } from '../storage';
 
 function greeting(hour: number): string {
@@ -47,7 +47,7 @@ export default function Today() {
     const result = await shareJson(`lembra-backup-${studyDayKey(now, 4)}.json`, await exportBackupJson());
     if (result !== 'cancelled') {
       await markExported(now);
-      toast({ message: result === 'saved' ? SAVED_MESSAGE : 'Backup exportado' });
+      toast({ message: result === 'saved' ? savedMessage() : 'Backup exportado' });
     }
   }
 

@@ -1,11 +1,14 @@
-import { saveToDocuments } from './nativeBackupFs';
+import { saveToDocuments, visibleFolder } from './nativeBackupFs';
 import { isNativeApp } from './platform';
 
 export type ShareResult = 'shared' | 'downloaded' | 'saved' | 'cancelled';
 
-export const SAVED_MESSAGE = 'Salvo em Documentos/Lembra';
+/** Mensagem depois de salvar no app, com a pasta de cada sistema. */
+export function savedMessage(): string {
+  return `Salvo em ${visibleFolder()}`;
+}
 
-/** No app Android grava em Documentos/Lembra ('saved'); na web compartilha ou baixa. */
+/** No app grava na pasta do Lembra ('saved'); na web compartilha ou baixa. */
 export async function shareJson(filename: string, json: string): Promise<ShareResult> {
   if (isNativeApp()) {
     await saveToDocuments(filename, json);
