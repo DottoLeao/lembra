@@ -1,4 +1,6 @@
 import { expect, test } from '@playwright/test';
+import { resolve } from 'node:path';
+import { pathToFileURL } from 'node:url';
 
 const EMAIL = 'lembra.flashcards@gmail.com';
 
@@ -54,3 +56,13 @@ test('/testar/ mostra os 3 passos com os links do grupo e do teste da Play', asy
   await expect(page.getByRole('link', { name: 'Instalar pela Play Store' }))
     .toHaveAttribute('href', 'https://play.google.com/store/apps/details?id=com.dottoleao.lembra');
 });
+
+// abertas direto do disco (pré-visualização), as páginas também precisam achar ícone e fontes
+for (const page of ['testar', 'privacidade', 'suporte']) {
+  test(`${page} carrega o ícone mesmo aberta como arquivo`, async ({ page: p }) => {
+    const url = pathToFileURL(resolve(`public/${page}/index.html`)).href;
+    await p.goto(url);
+    const img = p.locator('img').first();
+    await expect.poll(() => img.evaluate((el: HTMLImageElement) => el.naturalWidth)).toBeGreaterThan(0);
+  });
+}
