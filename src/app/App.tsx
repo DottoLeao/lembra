@@ -11,6 +11,7 @@ import CardEditor from '../ui/screens/CardEditor';
 import DeckScreen from '../ui/screens/Deck';
 import Decks from '../ui/screens/Decks';
 import Import from '../ui/screens/Import';
+import Install from '../ui/screens/Install';
 import SessionEnd from '../ui/screens/SessionEnd';
 import SettingsScreen from '../ui/screens/Settings';
 import Study from '../ui/screens/Study';
@@ -24,6 +25,7 @@ const router = createHashRouter([
     children: [
       { path: '/', element: <Today /> },
       { path: '/welcome', element: <Welcome /> },
+      { path: '/install', element: <Install /> },
       { path: '/decks', element: <Decks /> },
       { path: '/deck/:id', element: <DeckScreen /> },
       { path: '/study', element: <Study /> },

@@ -5,7 +5,7 @@ import { resetDb } from '../test/resetDb';
 import { createCard, deleteCard, getCard, listDeckCards } from './cards';
 import { db } from './db';
 import { createDeck, deleteDeck, listDecks, updateDeck } from './decks';
-import { exportBackupJson, exportDeckJson, importParsed, markExported } from './importExport';
+import { exportBackupJson, exportDeckJson, importParsed, markExported, restoreFromText } from './importExport';
 import { answerCard } from './reviews';
 import { getSettings } from './settings';
 
@@ -154,5 +154,33 @@ describe('exportação', () => {
   it('markExported grava a data', async () => {
     await markExported(123);
     expect((await getSettings()).lastExportAt).toBe(123);
+  });
+});
+
+describe('restoreFromText (levar os cards do navegador para o app)', () => {
+  it('restaura o backup colado, com progresso, e marca o app como já apresentado', async () => {
+    const d = await createDeck('Inglês');
+    const c = await createCard(d.id, 'dog', 'cão');
+    await answerCard(c.id, 3, createScheduler(0.9), 500);
+    const backup = await exportBackupJson();
+    await resetDb();
+
+    const r = await restoreFromText(backup, 1000);
+    expect(r).toEqual({ ok: true, imported: 1 });
+    const [deck] = await listDecks();
+    expect(deck.name).toBe('Inglês');
+    expect((await getCard(c.id))?.fsrs.reps).toBe(1);
+    expect((await getSettings()).onboardedAt).toBe(1000);
+  });
+
+  it('recusa texto que não é um backup do Lembra, sem mexer em nada', async () => {
+    const r = await restoreFromText('oi, tudo bem?', 1000);
+    expect(r.ok).toBe(false);
+    expect(await listDecks()).toEqual([]);
+    expect((await getSettings()).onboardedAt).toBeUndefined();
+  });
+
+  it('recusa área de transferência vazia', async () => {
+    expect((await restoreFromText('   ', 1000)).ok).toBe(false);
   });
 });

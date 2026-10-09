@@ -1,4 +1,4 @@
-import { serializeBackup, serializeDeck, type ParsedDeck } from '../domain/cardJson';
+import { parseCardJson, serializeBackup, serializeDeck, type ParsedDeck } from '../domain/cardJson';
 import { newId } from '../domain/id';
 import { newFsrsState } from '../domain/scheduler';
 import type { Deck } from '../domain/types';
@@ -95,6 +95,22 @@ export async function exportBackupJson(): Promise<string> {
     decks.map(async (deck) => ({ deck, cards: (await listDeckCards(deck.id)).reverse() })),
   );
   return serializeBackup(entries);
+}
+
+/**
+ * Restaura um backup colado (ex.: copiado no Safari e colado no app instalado, que no iPhone guarda
+ * os dados à parte) e marca o app como já apresentado.
+ */
+export async function restoreFromText(
+  text: string,
+  now = Date.now(),
+): Promise<{ ok: true; imported: number } | { ok: false }> {
+  if (!text.trim()) return { ok: false };
+  const parsed = parseCardJson(text);
+  if (!parsed.ok) return { ok: false };
+  const { imported } = await importParsed(parsed.decks, {}, now);
+  await updateSettings({ onboardedAt: now });
+  return { ok: true, imported };
 }
 
 export async function markExported(now: number): Promise<void> {

@@ -9,6 +9,8 @@ import { DeckRow } from '../components/DeckRow';
 import { MotionItem, MotionList } from '../components/MotionList';
 import { DeckSheet } from '../components/DeckSheet';
 import { Icon } from '../components/Icon';
+import { InstallBanner } from '../components/InstallBanner';
+import { wantsInstallScreen } from '../install';
 import { BACKUP_ERROR, useSafeAction, useToast } from '../components/Toast';
 import { savedMessage, shareJson } from '../share';
 import { readSession, writeSession } from '../storage';
@@ -34,7 +36,8 @@ export default function Today() {
   const [backupDismissed, setBackupDismissed] = useState(() => readSession('backupDismissed') === '1');
 
   useEffect(() => {
-    if (overview && !overview.onboarded) navigate('/welcome', { replace: true });
+    // no celular, pelo navegador, primeiro o convite para instalar (no iPhone os dados do navegador não vão para o app)
+    if (overview && !overview.onboarded) navigate(wantsInstallScreen() ? '/install' : '/welcome', { replace: true });
   }, [overview, navigate]);
 
   function closeSheet() {
@@ -73,6 +76,8 @@ export default function Today() {
           {streak.days} {streak.days === 1 ? 'dia' : 'dias'}
         </span>
       </header>
+
+      <InstallBanner hasDecks={decks.length > 0} />
 
       {overview.backupDue && !backupDismissed && (
         <div className="notice">

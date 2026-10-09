@@ -1,7 +1,9 @@
 import { expect, test } from '@playwright/test';
+import { continueInBrowser } from './helpers';
 
 test('primeira abertura mostra o onboarding e termina criando o primeiro baralho', async ({ page }) => {
   await page.goto('/');
+  await continueInBrowser(page);
   await expect(page.getByRole('heading', { name: 'Estude menos, lembre mais.' })).toBeVisible();
   await expect(page.getByText(/O Lembra revisa cada coisa\s+pouco antes de tu esqueceres\./)).toBeVisible();
   await page.getByRole('button', { name: 'Continuar' }).click();
@@ -28,6 +30,7 @@ test('primeira abertura mostra o onboarding e termina criando o primeiro baralho
 
 test('Pular marca como visto', async ({ page }) => {
   await page.goto('/');
+  await continueInBrowser(page);
   await page.getByRole('button', { name: 'Pular' }).click();
   await expect(page).toHaveURL(/#\/$/);
   await page.reload();

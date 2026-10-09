@@ -347,3 +347,19 @@
     transition-duration: 0.01ms !important;
   }
 }
+
+/* ---------- instalar o app ---------- */
+.install { display: flex; flex-direction: column; gap: 16px; justify-content: center; }
+.install__icon { border-radius: 22px; box-shadow: 0 10px 30px var(--shadow); align-self: flex-start; }
+.install__steps { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 12px; }
+.install__steps li { display: flex; gap: 12px; align-items: center; font-size: 16px; line-height: 1.4; }
+.install__steps svg { vertical-align: -3px; }
+.install__num {
+  flex: none; width: 28px; height: 28px; border-radius: 14px; display: grid; place-items: center;
+  background: var(--ink); color: var(--card); font-weight: 600; font-size: 14px;
+}
+.install__done { margin: 0; padding: 12px 14px; border-radius: var(--radius); background: var(--easy-bg); color: var(--easy-fg); font-weight: 600; }
+.install__stay { margin-top: 4px; }
+.install-banner { flex-wrap: wrap; }
+.install-banner__actions { display: flex; gap: 16px; flex-wrap: wrap; }
+.welcome__paste { align-self: center; }
