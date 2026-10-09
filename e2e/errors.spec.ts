@@ -1,5 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
-import { createCards, createDeck, openApp } from './helpers';
+import { continueInBrowser, createCards, createDeck, openApp } from './helpers';
 
 const SAVE_ERROR = 'Não foi possível salvar. Teus dados continuam como estavam.';
 
@@ -100,6 +100,7 @@ test('exportar backup com falha avisa', async ({ page }) => {
 
 test('onboarding com falha avisa e continua nele', async ({ page }) => {
   await page.goto('/');
+  await continueInBrowser(page);
   await expect(page.getByRole('heading', { name: 'Estude menos, lembre mais.' })).toBeVisible();
   await breakWrites(page);
   await page.getByRole('button', { name: 'Pular' }).click();

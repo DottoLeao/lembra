@@ -1,11 +1,13 @@
 import { AnimatePresence, motion } from 'motion/react';
 import { useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router';
+import { restoreFromText } from '../../data/importExport';
 import { updateSettings } from '../../data/settings';
 import { AnswerButtons } from '../components/AnswerButtons';
 import { FlipCard } from '../components/FlipCard';
 import { Icon } from '../components/Icon';
-import { useSafeAction } from '../components/Toast';
+import { useSafeAction, useToast } from '../components/Toast';
+import { useInstall } from '../install';
 
 const MINUTE_OPTIONS = [5, 10, 15];
 
@@ -32,6 +34,25 @@ export default function Welcome() {
   const [flipped, setFlipped] = useState(false);
   const [minutes, setMinutes] = useState(10);
   const run = useSafeAction();
+  const toast = useToast();
+  // no iPhone o app instalado começa vazio: dá para trazer os cards copiados no navegador
+  const installed = useInstall().installCase === 'installed';
+
+  async function pasteCards() {
+    let text = '';
+    try {
+      text = await navigator.clipboard.readText();
+    } catch {
+      // sem permissão para ler: cai no aviso abaixo
+    }
+    const r = await restoreFromText(text);
+    if (!r.ok) {
+      toast({ message: 'Não achei cards copiados. No navegador, toca em “Levar meus cards para o app” e volta aqui.' });
+      return;
+    }
+    toast({ message: `${r.imported} ${r.imported === 1 ? 'card trazido' : 'cards trazidos'} do navegador` });
+    navigate('/', { replace: true });
+  }
 
   async function finish(createDeck: boolean) {
     await updateSettings({ onboardedAt: Date.now(), ...(createDeck ? { minutesPerDay: minutes } : {}) });
@@ -118,6 +139,12 @@ export default function Welcome() {
           {slide.body}
         </motion.section>
       </AnimatePresence>
+
+      {installed && !again && step === 0 && (
+        <button type="button" className="link-btn welcome__paste" onClick={() => run(pasteCards)}>
+          Já usava no navegador? Colar meus cards
+        </button>
+      )}
 
       {last ? (
         <button type="button" className="btn btn--primary btn--block" onClick={() => run(() => finish(!again))}>

@@ -6,7 +6,7 @@ import { TabBar } from './TabBar';
 /** Como a tela nova chega: sobe (foco), desce (sai do foco), vem da direita/esquerda ou troca de aba. */
 type Move = 'focus-in' | 'focus-out' | 'forward' | 'back' | 'tab';
 
-const FOCUS = ['/study', '/study/end', '/card/new', '/card/:id/edit', '/import', '/welcome'];
+const FOCUS = ['/study', '/study/end', '/card/new', '/card/:id/edit', '/import', '/welcome', '/install'];
 const TAB_ROOTS = ['/', '/decks'];
 
 const isFocus = (path: string) => FOCUS.some((p) => matchPath(p, path));

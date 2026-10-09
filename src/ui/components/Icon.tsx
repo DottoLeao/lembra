@@ -2,7 +2,7 @@ import type { ReactNode } from 'react';
 
 export type IconName =
   | 'home' | 'decks' | 'settings' | 'plus' | 'close' | 'back' | 'undo' | 'more'
-  | 'search' | 'download' | 'upload' | 'copy' | 'check' | 'flame' | 'arrow-right' | 'trash';
+  | 'search' | 'download' | 'upload' | 'copy' | 'check' | 'flame' | 'arrow-right' | 'trash' | 'share';
 
 const PATHS: Record<IconName, ReactNode> = {
   home: <path d="M4 10.5L12 4l8 6.5V19a1 1 0 0 1-1 1h-4.5v-5.5h-5V20H5a1 1 0 0 1-1-1z" />,
@@ -21,6 +21,8 @@ const PATHS: Record<IconName, ReactNode> = {
   flame: <path d="M12 22c4 0 7-3 7-7 0-4-3-6-4-9-1 2-2 3-4 3 0-2-1-4-3-6 0 4-3 6-3 11 0 4 3 8 7 8z" />,
   'arrow-right': <path d="M5 12h14M13 6l6 6-6 6" />,
   trash: <path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3" />,
+  // o botão Compartilhar do iPhone: caixa com seta para cima
+  share: (<><path d="M12 15V3M8 7l4-4 4 4" /><path d="M8 10H6a1 1 0 0 0-1 1v9a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-9a1 1 0 0 0-1-1h-2" /></>),
 };
 
 export function Icon({ name, size = 22, stroke = 2 }: { name: IconName; size?: number; stroke?: number }) {
