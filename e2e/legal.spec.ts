@@ -43,3 +43,14 @@ test('páginas legíveis no tema escuro', async ({ page }) => {
   const bg = await page.evaluate(() => getComputedStyle(document.body).backgroundColor);
   expect(bg).toBe('rgb(22, 19, 15)');
 });
+
+test('/testar/ mostra os 3 passos com os links do grupo e do teste da Play', async ({ page }) => {
+  await page.goto('/testar/');
+  await expect(page.getByRole('heading', { level: 1, name: 'Teste o Lembra' })).toBeVisible();
+  await expect(page.getByRole('link', { name: 'Entrar no grupo de testadores' }))
+    .toHaveAttribute('href', 'https://groups.google.com/g/lembra-testadores');
+  await expect(page.getByRole('link', { name: 'Quero participar do teste' }))
+    .toHaveAttribute('href', 'https://play.google.com/apps/testing/com.dottoleao.lembra');
+  await expect(page.getByRole('link', { name: 'Instalar pela Play Store' }))
+    .toHaveAttribute('href', 'https://play.google.com/store/apps/details?id=com.dottoleao.lembra');
+});
