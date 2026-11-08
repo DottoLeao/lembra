@@ -10,3 +10,6 @@ tsconfig.tsbuildinfo
 *.jks
 *.keystore
 android/app/release/
+
+# Anotações locais
+docs/superpowers/
