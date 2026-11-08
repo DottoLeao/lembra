@@ -1,83 +1,106 @@
+<div align="center">
+
+<img src="public/icon.svg" alt="Lembra logo" width="96"/>
+
 # Lembra
 
-A spaced-repetition flashcard app that works offline, built mobile-first as a PWA and packaged for Android with Capacitor.
+**Offline spaced-repetition flashcards, as a PWA and an Android app.**
 
-**Live demo:** https://lembra-nine.vercel.app &nbsp;·&nbsp; the interface is in Brazilian Portuguese ("Lembra" means "remembers").
+[![Live demo](https://img.shields.io/badge/Live_demo-lembra--nine.vercel.app-2dbd82?style=flat-square&labelColor=0c0d0b)](https://lembra-nine.vercel.app)
 
-> Study less, remember more. Each card is scheduled to come back just before you would forget it.
+![React](https://img.shields.io/badge/React_19-61DAFB?style=flat-square&logo=react&logoColor=black)
+![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=flat-square&logo=typescript&logoColor=white)
+![Vite](https://img.shields.io/badge/Vite_7-646CFF?style=flat-square&logo=vite&logoColor=white)
+![PWA](https://img.shields.io/badge/PWA-5A0FC8?style=flat-square&logo=pwa&logoColor=white)
+![Capacitor](https://img.shields.io/badge/Capacitor_8-119EFF?style=flat-square&logo=capacitor&logoColor=white)
+![Vitest](https://img.shields.io/badge/Vitest-6E9F18?style=flat-square&logo=vitest&logoColor=white)
+![Playwright](https://img.shields.io/badge/Playwright-2EAD33?style=flat-square&logo=playwright&logoColor=white)
+![GitHub Actions](https://img.shields.io/badge/GitHub_Actions-2088FF?style=flat-square&logo=githubactions&logoColor=white)
 
-## Why it exists
+</div>
 
-Anki is powerful, but people abandon it: review piles grow after a few days away, setup is confusing and creating cards is slow. Lembra tries to fix those specific problems (the research and decisions are written down in [`docs/superpowers/specs`](docs/superpowers/specs), in Portuguese):
+## About
 
-| Problem with Anki | What Lembra does |
-|---|---|
-| Review backlog after days off leads to quitting | Daily limit derived from "minutes per day", cards prioritised by forgetting risk, new cards pause automatically when the backlog grows |
-| Dated UI, confusing settings | One visible setting ("minutes per day"); everything else under "Advanced" |
-| Creating cards is tedious | "Save and next" flow, plus JSON import so any AI tool can generate a deck |
-| Punishing streaks | One automatic rest day per week |
-| Paid on iPhone | Free PWA on Android and iPhone |
+Anki is powerful, but people give up on it: the review pile grows after a few days away, the settings are confusing and creating cards is slow. Lembra keeps the proven FSRS scheduling and attacks those reasons for quitting: a daily limit set in "minutes per day", cards ordered by how likely you are to forget them, and new cards paused automatically when the backlog grows. It runs fully offline, with all data stored on the device. The interface is in Brazilian Portuguese ("Lembra" means "remembers").
 
 ## Features
 
 - Decks and cards, with a card that flips on tap and four answer grades
 - Scheduling with the open-source **FSRS** algorithm ([`ts-fsrs`](https://github.com/open-spaced-repetition/ts-fsrs))
-- Import decks by pasting JSON or opening a `.json` file, with a preview before saving; export a deck through the phone's share sheet
-- Fully **offline**: data lives on the device in IndexedDB (Dexie), with automatic backup
+- One visible setting, "minutes per day"; everything else lives under "Advanced"
+- New cards pause automatically when the review backlog grows, and one rest day per week keeps the streak from punishing you
+- "Save and next" flow for fast card creation
+- Import decks by pasting JSON or opening a `.json` file, with a preview before saving, so any AI tool can generate a deck; export a deck through the phone's share sheet
+- Local-first: data lives in IndexedDB (Dexie), with automatic backup
 - Light, dark and automatic theme
-- Installable PWA, and an Android app built with Capacitor
+- Installable PWA, plus an Android app built with Capacitor
 
 ## Tech stack
 
 | Area | Choice |
 |---|---|
-| UI | React 19, React Router 7, TypeScript, Motion for gestures and transitions |
-| Build | Vite 7, `vite-plugin-pwa` (service worker + manifest) |
-| Data | Dexie 4 (IndexedDB), local-first, no backend |
-| Scheduling | ts-fsrs |
-| Mobile | Capacitor 8 (Android) |
-| Tests | Vitest (unit, 110 tests), Playwright (end-to-end) |
-| CI/CD | GitHub Actions builds and signs the APK; Vercel hosts the web app |
+| UI | React 19, React Router 7, TypeScript, Motion |
+| Build | Vite 7, `vite-plugin-pwa` (service worker and manifest) |
+| Data | Dexie 4 (IndexedDB), no backend |
+| Scheduling | `ts-fsrs` |
+| Mobile | Capacitor 8 |
+| Tests | Vitest, Playwright, `fake-indexeddb` |
+| CI/CD | GitHub Actions (Android release build, iOS TestFlight build); Vercel hosts the web app |
+
+## Screenshots
+
+<div align="center">
+<img src="docs/loja/arte/play-01.png" alt="Today screen: a few minutes a day" width="200"/>
+<img src="docs/loja/arte/play-02.png" alt="Study screen: try to remember before flipping" width="200"/>
+<img src="docs/loja/arte/play-03.png" alt="Answer grades: each card comes back at the right time" width="200"/>
+<img src="docs/loja/arte/play-04.png" alt="Progress screen" width="200"/>
+</div>
+
+## Getting started
+
+Requires Node 24 (the version used in CI). No environment variables are needed.
+
+```bash
+npm ci
+npm run dev          # http://localhost:5173
+npm run build        # type-check + production build
+npm run preview      # serve the production build
+```
 
 ## Project structure
 
 ```
 src/
-  domain/   Pure logic: scheduler, study queue, streak, card JSON format (unit-tested)
-  data/     Dexie database and data access: decks, cards, reviews, settings, import/export, backup
-  ui/       Screens, components, theme tokens, platform helpers
-  app/      App shell and routing
+  domain/   pure logic: scheduler, study queue, streak, card JSON format
+  data/     Dexie database: decks, cards, reviews, settings, import/export, backup
+  ui/       screens, components, theme tokens, platform helpers
+  app/      app shell and routing
 e2e/        Playwright end-to-end tests
 android/    Capacitor Android project
-docs/       Design specs and implementation plans (Portuguese)
+docs/       design specs, implementation plans and store listing material (Portuguese)
 ```
 
 The `domain` layer has no React or browser dependencies, so the scheduling and queue rules are tested in isolation.
 
-## Run it locally
+## Tests
 
 ```bash
-npm ci
-npm run dev          # http://localhost:5173
-npm test             # unit tests
-npm run test:e2e     # Playwright end-to-end tests (needs `npx playwright install` once)
-npm run build        # type-check + production build
+npm test             # 149 unit tests in 24 files (Vitest)
+npm run test:e2e     # 13 Playwright spec files; run `npx playwright install` once first
 ```
-
-Requires Node 24 (the version used in CI).
-
-## Android
-
-`.github/workflows/android.yml` builds a signed release APK on every push to `main` and publishes it to the `apk-latest` release. The signing key is stored in GitHub Secrets and is never committed.
 
 ## Roadmap
 
-Stage 1 (this repo): the study core, offline, on the phone. Next: accounts and sync across devices, an MCP server so any AI can create cards, and a community for sharing decks. Details in [`docs/superpowers/specs`](docs/superpowers/specs).
+From the design specs in [`docs/superpowers/specs`](docs/superpowers/specs):
 
-## About the AI-assisted workflow
-
-I built this with AI coding agents. The `docs/superpowers` folder holds the specs and step-by-step plans written before the code, and the test suites and strict type-check in the build are the gate that every change has to pass.
+- Accounts and sync across devices
+- An MCP server so any AI tool can create cards
+- A community for publishing and subscribing to shared decks
 
 ## Author
 
-Lorenzo Leão Dotto, full-stack developer. [GitHub](https://github.com/DottoLeao) · [Portfolio](https://lorenzodotto.com.br)
+**Lorenzo Leão Dotto**, full-stack developer.
+
+[![Portfolio](https://img.shields.io/badge/Portfolio-lorenzodotto.com.br-2dbd82?style=flat-square&labelColor=0c0d0b)](https://lorenzodotto.com.br)
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-lorenzodotto-2dbd82?style=flat-square&logo=linkedin&logoColor=white&labelColor=0c0d0b)](https://www.linkedin.com/in/lorenzodotto)
+[![GitHub](https://img.shields.io/badge/GitHub-DottoLeao-2dbd82?style=flat-square&logo=github&logoColor=white&labelColor=0c0d0b)](https://github.com/DottoLeao)
